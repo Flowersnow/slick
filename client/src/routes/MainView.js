@@ -26,8 +26,6 @@ export default () => (
                 <li/>
             </ul>
         </Messages>
-        <Input>
-            <input type='text' placeholder='CSS Grid Layout Module'/>
-        </Input>
+        <Input channelName={channelName}/>
     </Layout>
 );

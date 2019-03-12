@@ -1,8 +1,15 @@
+import React from 'react';
 import styled from 'styled-components';
+import { Input } from 'semantic-ui-react';
 
-export default styled.div`
+const InputDiv = styled.div`
   grid-column: 2;
   grid-row: 3;
-  outline-color: #00FF00;
-  outline-style: solid
+  margin: 20px;
 `;
+
+export default ({channelName}) => (
+    <InputDiv class="ui input">
+        <Input fluid placeholder={`Message #${channelName}`}/>
+    </InputDiv>
+)
