@@ -1,8 +1,16 @@
+import React from 'react';
 import styled from 'styled-components';
 
-export default styled.div`
+const HeaderDiv = styled.div`
   grid-column: 2;
   grid-row: 1;
-  outline-color: #0000FF;
-  outline-style: solid
 `;
+
+export default ({channelName}) => {
+
+    console.log('channelName = ', channelName);
+
+    return <HeaderDiv>
+        <header>#{channelName}</header>
+    </HeaderDiv>
+}

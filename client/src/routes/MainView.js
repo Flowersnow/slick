@@ -6,25 +6,28 @@ import Messages from '../components/Messages';
 import Input from '../components/Input';
 import Layout from '../components/Layout';
 
-const channels = [{ id: 1, name: 'general' }, { id: 2, name: 'random' }];
-const users = [{ id: 1, name: 'slackbot' }, { id: 2, name: 'user1' }];
+const username = 'Username';
+const channels = [{id: 1, name: 'general'}, {id: 2, name: 'random'}];
+const users = [{id: 1, name: 'slackbot'}, {id: 2, name: 'user1'}];
+
+const channelName = 'general';
 
 export default () => (
     <Layout>
         <SideBar
-            username="Username"
+            username={username}
             channels={channels}
             users={users}
         />
-        <Header>Header</Header>
+        <Header channelName={channelName}/>
         <Messages>
-            <ul className="message-list">
-                <li />
-                <li />
+            <ul className='message-list'>
+                <li/>
+                <li/>
             </ul>
         </Messages>
         <Input>
-            <input type="text" placeholder="CSS Grid Layout Module" />
+            <input type='text' placeholder='CSS Grid Layout Module'/>
         </Input>
     </Layout>
 );
