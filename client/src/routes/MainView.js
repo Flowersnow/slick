@@ -8,7 +8,7 @@ import Layout from '../components/Layout';
 
 const username = 'Username';
 const channels = [{id: 1, name: 'general'}, {id: 2, name: 'random'}];
-const users = [{id: 1, name: 'slackbot'}, {id: 2, name: 'user1'}];
+const users = [{id: 1, name: 'slackbot', isOnline: true}, {id: 2, name: 'user1', isOnline: false}];
 
 const channelName = 'general';
 
