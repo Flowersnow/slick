@@ -6,7 +6,7 @@ import MainView from './MainView';
 export default () => (
     <BrowserRouter>
         <Switch>
-            <Route path="/" exact component={MainView} />
+            <Route path="/" exact component={MainView}/>
         </Switch>
     </BrowserRouter>
 );

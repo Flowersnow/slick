@@ -37,7 +37,7 @@ const GreenCircle = styled.span`
   display: inline-block;
 `;
 
-const Bubble = ({ on }) => (on ? <GreenCircle/> : '○');
+const Bubble = ({ on }) => ( on ? <GreenCircle/> : '○' );
 
 const renderChannels = ({ id, name }) => <SidebarListItem key={`channel-${id}`}># {name}</SidebarListItem>;
 
@@ -47,7 +47,7 @@ const renderUsers = ({ id, name, isOnline }) => (
     </SidebarListItem>
 );
 
-export default ({username, channels, users}) => (
+export default ({ username, channels, users }) => (
     <SidebarDiv>
         <SidebarHeader>
             <SlickHeader>Slick</SlickHeader>
@@ -56,13 +56,13 @@ export default ({username, channels, users}) => (
         <div>
             <SidebarList>
                 <SidebarListItem>Channels</SidebarListItem>
-                {channels.map(renderChannels)}
+                {channels.map( renderChannels )}
             </SidebarList>
         </div>
         <div>
             <SidebarList>
                 <SidebarListItem>Direct Messages</SidebarListItem>
-                {users.map(renderUsers)}
+                {users.map( renderUsers )}
             </SidebarList>
         </div>
     </SidebarDiv>
