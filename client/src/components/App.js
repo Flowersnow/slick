@@ -17,7 +17,7 @@ const mapStateToProps = ({ messages, users, socket: { connected }, channels }) =
     messages,
     connected,
     userCount: users ? users.length : 0,
-    channelName: channels ? channels[0].name : 'Channel Error'
+    channelName: channels ? channels[ 0 ].name : 'Channel Error'
 } );
 
 export class App extends Component {
@@ -35,11 +35,7 @@ export class App extends Component {
 
         return (
             <Layout>
-                <SideBar
-                    username={username}
-                    channels={channels}
-                    users={users}
-                />
+                <SideBar/>
                 <Header channelName={channelName}/>
                 <Messages>
                     <ul className='message-list'>
@@ -47,7 +43,7 @@ export class App extends Component {
                         <li/>
                     </ul>
                 </Messages>
-                <Input />
+                <Input/>
             </Layout>
         )
     }

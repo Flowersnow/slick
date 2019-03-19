@@ -15,3 +15,14 @@ export const channelReducer = (state = [], { type, payload }) => {
             return state;
     }
 };
+
+export const currentChannelReducer = (state = null, { type, payload }) => {
+    switch (type) {
+        case CHANGE_CHANNEL: {
+            return payload.newChannel;
+        }
+        default:
+            return state;
+    }
+
+};

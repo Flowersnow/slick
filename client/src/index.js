@@ -16,19 +16,21 @@ const socketPort = 3001;
 
 const middlewares = [ socketIoMiddleware( socketPort ) ];
 
-const username = 'Username';
 const channels = [ { id: 1, name: 'general' }, { id: 2, name: 'random' } ];
 const users = [ { id: 1, name: 'slackbot', isOnline: true }, { id: 2, name: 'user1', isOnline: false } ];
-const channelName = 'general';
+const currentUser = users[1];
+const currentChannel = channels[0];
 
 const initialState = {
     users,
+    currentUser,
     messages: '',
     socket: { connected: false },
-    channels
+    channels,
+    currentChannel
 };
 
-const store = createStore(
+export const store = createStore(
     combineReducers( {
         ...reducers,
     } ),
@@ -38,7 +40,7 @@ const store = createStore(
 
 ReactDOM.render(
     <Provider store={store}>
-        <App/>
+        <Routes/>
     </Provider>, document.getElementById( 'root' ) );
 
 // If you want your app to work offline and load faster, you can change

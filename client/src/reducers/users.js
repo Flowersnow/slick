@@ -20,8 +20,8 @@ export const usersReducer = (state = [], { type, payload }) => {
 export const currentUserReducer = (state = null, { type, payload }) => {
     switch (type) {
         case USER_ENTERS: {
-            const { me, id } = payload;
-            if (me) return id;
+            const { name, id } = payload;
+            if (name) return id;
             break;
         }
         default:
