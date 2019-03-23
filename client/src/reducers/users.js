@@ -17,15 +17,12 @@ export const usersReducer = (state = [], { type, payload }) => {
     }
 };
 
-export const currentUserReducer = (state = null, { type, payload }) => {
+export const currentUserIdReducer = (state = 1, { type, payload }) => {
     switch (type) {
         case USER_ENTERS: {
-            const { name, id } = payload;
-            if (name) return id;
-            break;
+            return payload.id;
         }
         default:
-            break;
+            return state;
     }
-    return state;
 };

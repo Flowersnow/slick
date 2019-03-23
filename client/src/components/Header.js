@@ -11,7 +11,7 @@ const HeaderDiv = styled.div`
 `;
 
 const mapStateToProps = state => (
-    { currentChannel: currentChannelSelector(state) }
+    { currentChannel: currentChannelSelector(state.channels, state.currentChannelId) }
 );
 
 export class Header extends Component {

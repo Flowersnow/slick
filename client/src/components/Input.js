@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Input as UiInput } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { socketAction, messageSent } from "../actions";
-import { currentChannelSelector } from "../selectors";
+import { currentChannelSelector, currentUserSelector } from "../selectors";
 
 const InputDiv = styled.div`
   grid-column: 2;
@@ -13,7 +13,8 @@ const InputDiv = styled.div`
 
 const mapStateToProps = state => ( {
     online: state.socket.connected,
-    currentChannel: currentChannelSelector( state )
+    currentChannel: currentChannelSelector( state.channels, state.currentChannelId ),
+    currentUser: currentUserSelector( state.users, state.currentUserId )
 } );
 const mapDispatchToProps = { messageSent: socketAction( messageSent ) };
 
@@ -30,8 +31,7 @@ class Input extends Component {
         if (key !== 'Enter') {
             return;
         }
-        // console.log( this.state.message ); // todo remove
-        this.props.messageSent( this.state.message, this.props.username );
+        this.props.messageSent( this.state.message, this.props.currentUser.id, this.props.currentChannel.id );
         this.setState( { message: "" } );
     };
 
@@ -40,13 +40,10 @@ class Input extends Component {
     }
 
     render() {
-        // console.log( 'this.state = ' );
-        // console.log( this.state );
-
         const {
             onMessageChanged,
             onMessageKeypress,
-            // disabled,
+            disabled,
             state: {
                 message
             }
@@ -61,7 +58,8 @@ class Input extends Component {
                 <UiInput fluid placeholder={`Message #${currentChannel.name}`}
                          value={message}
                          onChange={onMessageChanged}
-                         onKeyPress={onMessageKeypress}/>
+                         onKeyPress={onMessageKeypress}
+                         disabled={disabled}/>
             </InputDiv>
         );
     }

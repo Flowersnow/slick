@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { Comment } from 'semantic-ui-react';
 import find from 'lodash/find';
+import { messagesForChannelSelector } from "../selectors";
 
 const MessagesDiv = styled.div`
   grid-column: 2;
@@ -14,10 +15,16 @@ const MessagesDiv = styled.div`
   overflow-y: auto;
 `;
 
+const StyledContent = styled(Comment.Content)`
+  &:hover {
+    background: aliceblue;
+  }
+`;
+
 const mapStateToProps = (state) => (
     {
         users: state.users,
-        messages: state.messages
+        messagesForChannel: messagesForChannelSelector(state.messages, state.currentChannelId)
     }
 );
 
@@ -28,8 +35,8 @@ export class Messages extends Component {
     );
 
     renderComments = ({ userId, message, timestamp }) => (
-        <Comment>
-            <Comment.Content>
+        <Comment key={timestamp}>
+            <StyledContent>
                 <Comment.Author as='a'>{this.getUserFromId( userId )}</Comment.Author>
                 <Comment.Metadata>
                     <div>{timestamp}</div>
@@ -38,20 +45,20 @@ export class Messages extends Component {
                 <Comment.Actions>
                     <Comment.Action>Reply</Comment.Action>
                 </Comment.Actions>
-            </Comment.Content>
+            </StyledContent>
         </Comment>
     );
 
     render() {
         const {
             renderComments,
-            props: { messages }
+            props: { messagesForChannel }
         } = this;
 
         return (
             <MessagesDiv>
-                <Comment.Group>
-                    {messages.map( renderComments )}
+                <Comment.Group style={{'max-width': 'unset'}}>
+                    {messagesForChannel.map( renderComments )}
                 </Comment.Group>
             </MessagesDiv>
         )

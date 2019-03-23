@@ -1,6 +1,6 @@
 import { MESSAGE_SENT } from './actionTypes.js';
 
-export const messageSent = (message) => ( {
+export const messageSent = (message, userId, channelId) => ( {
     type: MESSAGE_SENT,
-    payload: { content: message }
+    payload: { message, userId, channelId, timestamp: new Date().toLocaleString() }
 } );

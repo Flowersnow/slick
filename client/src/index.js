@@ -17,21 +17,22 @@ const middlewares = [ socketIoMiddleware( socketPort ) ];
 
 const channels = [ { id: 1, name: 'general' }, { id: 2, name: 'random' } ];
 const users = [ { id: 1, name: 'slackbot', isOnline: true }, { id: 2, name: 'user1', isOnline: false } ];
-const currentUser = users[ 1 ];
-const currentChannel = 1;
+const currentChannelId = 1;
 const messages = [
-    { userId: 1, message: 'hello!', timestamp: '2019-Mar-03 3:00' },
-    { userId: 2, message: 'hi bot', timestamp: '2019-Mar-03 3:02' },
-    { userId: 1, message: 'hello again!', timestamp: '2019-Mar-03 3:03' }
+    { userId: 1, message: 'hello!', timestamp: '2019-Mar-03 3:00', channelId: 1 },
+    { userId: 2, message: 'hi bot', timestamp: '2019-Mar-03 3:02', channelId: 1 },
+    { userId: 1, message: 'hello again!', timestamp: '2019-Mar-03 3:03', channelId: 1 },
+    { userId: 1, message: 'hello!', timestamp: '2019-Mar-03 3:00', channelId: 2 },
+    { userId: 2, message: 'this is to test the second channel', timestamp: '2019-Mar-03 3:02', channelId: 2 },
+    { userId: 1, message: 'test succeeded!!', timestamp: '2019-Mar-03 3:03', channelId: 2 }
 ];
-
 const initialState = {
     users,
-    currentUser,
     messages,
     socket: { connected: false },
     channels,
-    currentChannel
+    currentChannelId,
+    currentUserId: 2
 };
 
 export const store = createStore(

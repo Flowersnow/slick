@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { socketAction, channelChanged } from "../actions";
-import { currentChannelSelector } from "../selectors";
+import { channelChanged, socketAction } from "../actions";
+import { currentChannelSelector, currentUserSelector } from "../selectors";
 
 const SidebarDiv = styled.div`
   grid-column: 1;
@@ -43,17 +43,16 @@ const GreenCircle = styled.span`
 const mapStateToProps = state => ( {
     users: state.users,
     channels: state.channels,
-    currentUser: state.currentUser,
-    currentChannel: currentChannelSelector( state )
+    currentUser: currentUserSelector( state.users, state.currentUserId ),
+    currentChannel: currentChannelSelector( state.channels, state.currentChannelId )
 } );
-const mapDispatchToProps = { channelChanged };
+const mapDispatchToProps = { channelChanged: socketAction( channelChanged ) };
 
 const Bubble = ({ on }) => ( on ? <GreenCircle/> : '○' );
 
 export class Sidebar extends Component {
 
     onChangeChannel = (newChannelId) => () => {
-        // const newChannel = find( this.props.channels, ({ id }) => id === newChannelId );
         this.props.channelChanged( newChannelId );
     };
 
