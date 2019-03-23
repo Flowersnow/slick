@@ -4,7 +4,6 @@ import './index.css';
 import Routes from './routes';
 import * as serviceWorker from './serviceWorker';
 import 'semantic-ui-css/semantic.min.css'
-import App from './components/App';
 
 import * as reducers from './reducers';
 import socketIoMiddleware from './middleware/socket';
@@ -18,13 +17,18 @@ const middlewares = [ socketIoMiddleware( socketPort ) ];
 
 const channels = [ { id: 1, name: 'general' }, { id: 2, name: 'random' } ];
 const users = [ { id: 1, name: 'slackbot', isOnline: true }, { id: 2, name: 'user1', isOnline: false } ];
-const currentUser = users[1];
-const currentChannel = channels[0];
+const currentUser = users[ 1 ];
+const currentChannel = 1;
+const messages = [
+    { userId: 1, message: 'hello!', timestamp: '2019-Mar-03 3:00' },
+    { userId: 2, message: 'hi bot', timestamp: '2019-Mar-03 3:02' },
+    { userId: 1, message: 'hello again!', timestamp: '2019-Mar-03 3:03' }
+];
 
 const initialState = {
     users,
     currentUser,
-    messages: '',
+    messages,
     socket: { connected: false },
     channels,
     currentChannel

@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { socketAction, channelChanged } from "../actions";
-import find from 'lodash/find';
-import { store } from "../index";
+import { currentChannelSelector } from "../selectors";
 
 const SidebarDiv = styled.div`
   grid-column: 1;
@@ -45,31 +44,20 @@ const mapStateToProps = state => ( {
     users: state.users,
     channels: state.channels,
     currentUser: state.currentUser,
-    currentChannel: state.currentChannel
+    currentChannel: currentChannelSelector( state )
 } );
-const mapDispatchToProps = { channelChanged: channelChanged };
+const mapDispatchToProps = { channelChanged };
 
 const Bubble = ({ on }) => ( on ? <GreenCircle/> : '○' );
 
 export class Sidebar extends Component {
-    constructor(props) {
-        super( props );
-        const { users, currentUser = 'Anonymous', channels, currentChannel } = props;
 
-        this.state = {
-            users,
-            currentUser,
-            channels,
-            currentChannel
-        }
-    }
-
-    onChangeChannel = (newChannelId) => {
-        const newChannel = find( this.state.channels, ({ id }) => id === newChannelId );
-        this.props.channelChanged( this.state.currentChannel, newChannel );
+    onChangeChannel = (newChannelId) => () => {
+        // const newChannel = find( this.props.channels, ({ id }) => id === newChannelId );
+        this.props.channelChanged( newChannelId );
     };
 
-    renderChannels = ({ id, name }) => <SidebarListItem onClick={this.onChangeChannel.bind( this, id )}
+    renderChannels = ({ id, name }) => <SidebarListItem onClick={this.onChangeChannel( id )}
                                                         key={`channel-${id}`}># {name}</SidebarListItem>;
 
     renderUsers = ({ id, name, isOnline }) => (
@@ -82,7 +70,7 @@ export class Sidebar extends Component {
         const {
             renderChannels,
             renderUsers,
-            state: { users, currentUser, channels }
+            props: { users, currentUser, channels }
         } = this;
 
         return (
@@ -104,7 +92,7 @@ export class Sidebar extends Component {
                     </SidebarList>
                 </div>
             </SidebarDiv>
-        )
+        );
     }
 }
 

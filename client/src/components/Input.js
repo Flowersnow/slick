@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Input as UiInput } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { socketAction, messageSent } from "../actions";
-import { store } from "../index";
+import { currentChannelSelector } from "../selectors";
 
 const InputDiv = styled.div`
   grid-column: 2;
@@ -11,23 +11,16 @@ const InputDiv = styled.div`
   margin: 20px;
 `;
 
-const mapStateToProps = state => ( { online: state.socket.connected, channelName: state.currentChannel.name } );
+const mapStateToProps = state => ( {
+    online: state.socket.connected,
+    currentChannel: currentChannelSelector( state )
+} );
 const mapDispatchToProps = { messageSent: socketAction( messageSent ) };
 
-export class Input extends Component {
-    constructor(props) {
-        super( props );
-
-        this.state = {
-            message: '',
-            channelName: store.getState().currentChannel.name
-        };
-
-        store.subscribe(()=>{
-            this.state.channelName = store.getState().currentChannel.name;
-        });
-
-    }
+class Input extends Component {
+    state = {
+        message: ''
+    };
 
     onMessageChanged = ({ target: { value: message } }) => {
         this.setState( { message } );
@@ -37,7 +30,7 @@ export class Input extends Component {
         if (key !== 'Enter') {
             return;
         }
-        console.log( this.state.message ); // todo remove
+        // console.log( this.state.message ); // todo remove
         this.props.messageSent( this.state.message, this.props.username );
         this.setState( { message: "" } );
     };
@@ -47,19 +40,25 @@ export class Input extends Component {
     }
 
     render() {
-        console.log( 'this.state = ' );
-        console.log( this.state );
+        // console.log( 'this.state = ' );
+        // console.log( this.state );
 
         const {
             onMessageChanged,
             onMessageKeypress,
-            state: { message, channelName },
-            disabled
+            // disabled,
+            state: {
+                message
+            }
         } = this;
+
+        const {
+            currentChannel
+        } = this.props;
 
         return (
             <InputDiv>
-                <UiInput fluid placeholder={`Message #${channelName}`}
+                <UiInput fluid placeholder={`Message #${currentChannel.name}`}
                          value={message}
                          onChange={onMessageChanged}
                          onKeyPress={onMessageKeypress}/>
