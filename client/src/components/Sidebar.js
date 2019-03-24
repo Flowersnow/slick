@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import styled from 'styled-components';
+import { connect } from 'react-redux';
+import { channelChanged, socketAction } from "../actions";
+import { currentChannelSelector, currentUserSelector } from "../selectors";
 
 const SidebarDiv = styled.div`
   grid-column: 1;
@@ -37,33 +40,59 @@ const GreenCircle = styled.span`
   display: inline-block;
 `;
 
-const Bubble = ({ on }) => (on ? <GreenCircle/> : '○');
+const mapStateToProps = state => ( {
+    users: state.users,
+    channels: state.channels,
+    currentUser: currentUserSelector( state.users, state.currentUserId ),
+    currentChannel: currentChannelSelector( state.channels, state.currentChannelId )
+} );
+const mapDispatchToProps = { channelChanged: socketAction( channelChanged ) };
 
-const renderChannels = ({ id, name }) => <SidebarListItem key={`channel-${id}`}># {name}</SidebarListItem>;
+const Bubble = ({ on }) => ( on ? <GreenCircle/> : '○' );
 
-const renderUsers = ({ id, name, isOnline }) => (
-    <SidebarListItem key={`user-${id}`}>
-        <Bubble on={isOnline}/> {name}
-    </SidebarListItem>
-);
+export class Sidebar extends Component {
 
-export default ({username, channels, users}) => (
-    <SidebarDiv>
-        <SidebarHeader>
-            <SlickHeader>Slick</SlickHeader>
-            {username}
-        </SidebarHeader>
-        <div>
-            <SidebarList>
-                <SidebarListItem>Channels</SidebarListItem>
-                {channels.map(renderChannels)}
-            </SidebarList>
-        </div>
-        <div>
-            <SidebarList>
-                <SidebarListItem>Direct Messages</SidebarListItem>
-                {users.map(renderUsers)}
-            </SidebarList>
-        </div>
-    </SidebarDiv>
-)
+    onChangeChannel = (newChannelId) => () => {
+        this.props.channelChanged( newChannelId );
+    };
+
+    renderChannels = ({ id, name }) => <SidebarListItem onClick={this.onChangeChannel( id )}
+                                                        key={`channel-${id}`}># {name}</SidebarListItem>;
+
+    renderUsers = ({ id, name, isOnline }) => (
+        <SidebarListItem key={`user-${id}`}>
+            <Bubble on={isOnline}/> {name}
+        </SidebarListItem>
+    );
+
+    render() {
+        const {
+            renderChannels,
+            renderUsers,
+            props: { users, currentUser, channels }
+        } = this;
+
+        return (
+            <SidebarDiv>
+                <SidebarHeader>
+                    <SlickHeader>Slick</SlickHeader>
+                    {currentUser.name}
+                </SidebarHeader>
+                <div>
+                    <SidebarList>
+                        <SidebarListItem>Channels</SidebarListItem>
+                        {channels.map( renderChannels )}
+                    </SidebarList>
+                </div>
+                <div>
+                    <SidebarList>
+                        <SidebarListItem>Direct Messages</SidebarListItem>
+                        {users.map( renderUsers )}
+                    </SidebarList>
+                </div>
+            </SidebarDiv>
+        );
+    }
+}
+
+export default connect( mapStateToProps, mapDispatchToProps )( Sidebar );
