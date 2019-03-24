@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 
 import { store } from './_helpers';
-import { App } from './App';
+import { LoginApp } from './components/Authentication/App.jsx';
 
 // setup fake backend
 //import { configureFakeBackend } from './_helpers';
@@ -11,7 +11,7 @@ import { App } from './App';
 
 render(
     <Provider store={store}>
-        <App />
+        <LoginApp />
     </Provider>,
     document.getElementById('app')
 );
