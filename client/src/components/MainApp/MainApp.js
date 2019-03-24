@@ -7,14 +7,7 @@ import Messages from './Messages';
 import Input from './Input';
 import Layout from './Layout';
 
-const mapStateToProps = ({ messages, users, socket: { connected }, channels }) => ( {
-    messages,
-    connected,
-    userCount: users ? users.length : 0,
-    channelName: channels ? channels[ 0 ].name : 'Channel Error'
-} );
-
-export class MainApp extends Component {
+class MainApp extends Component {
 
     render() {
         return (
@@ -28,5 +21,5 @@ export class MainApp extends Component {
     }
 }
 
-/*export default */ connect( mapStateToProps )( MainApp );
-
+const connectedApp = connect()( MainApp );
+export { connectedApp as MainApp };
