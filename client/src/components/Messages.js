@@ -15,7 +15,7 @@ const MessagesDiv = styled.div`
   overflow-y: auto;
 `;
 
-const StyledContent = styled(Comment.Content)`
+const StyledContent = styled( Comment.Content )`
   &:hover {
     background: aliceblue;
   }
@@ -24,15 +24,13 @@ const StyledContent = styled(Comment.Content)`
 const mapStateToProps = (state) => (
     {
         users: state.users,
-        messagesForChannel: messagesForChannelSelector(state.messages, state.currentChannelId)
+        messagesForChannel: messagesForChannelSelector( state.messages, state.currentChannelId )
     }
 );
 
 export class Messages extends Component {
 
-    getUserFromId = (userId) => (
-        ( find( this.props.users, user => user.id === userId ) || { name: "Unknown" } ).name
-    );
+    getUserFromId = (userId) => ( find( this.props.users, user => user.id === userId ) || { name: "Unknown" } ).name;
 
     renderComments = ({ userId, message, timestamp }) => (
         <Comment key={timestamp}>
@@ -57,7 +55,7 @@ export class Messages extends Component {
 
         return (
             <MessagesDiv>
-                <Comment.Group style={{'max-width': 'unset'}}>
+                <Comment.Group style={{ 'max-width': 'unset' }}>
                     {messagesForChannel.map( renderComments )}
                 </Comment.Group>
             </MessagesDiv>
