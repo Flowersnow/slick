@@ -14,7 +14,7 @@ const mapStateToProps = ({ messages, users, socket: { connected }, channels }) =
     channelName: channels ? channels[ 0 ].name : 'Channel Error'
 } );
 
-export class App extends Component {
+export class MainApp extends Component {
 
     render() {
         return (
@@ -28,5 +28,5 @@ export class App extends Component {
     }
 }
 
-/*export default */ connect( mapStateToProps )( App );
+/*export default */ connect( mapStateToProps )( MainApp );
 

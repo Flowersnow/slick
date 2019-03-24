@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { MainApp } from "../components/MainApp";
 
-import MainView from './MainView';
 
 export default () => (
     <BrowserRouter>
         <Switch>
-            <Route path="/" exact component={MainView}/>
+            <Route path="/" exact component={MainApp}/>
         </Switch>
     </BrowserRouter>
 );
