@@ -15,6 +15,7 @@ class RegisterPage extends React.Component {
                 username: '',
                 password: '',
                 adminstatus: false,
+                description: "",
             },
             submitted: false
         };
@@ -72,6 +73,10 @@ class RegisterPage extends React.Component {
 			<div className="help-block">Last Name is required</div>
                         }
                     
+		</div>
+        <div className={'form-group'}>
+			<label htmlFor="description">Description</label>
+			<input type="text" className="form-control" name="description" value={user.description} onChange={this.handleChange} />
 		</div>
 		<div className={'form-group' + (submitted && !user.username ? ' has-error' : '')}>
 			<label htmlFor="username">Username</label>

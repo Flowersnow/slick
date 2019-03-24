@@ -132,15 +132,16 @@ async function create(input) {
         input.hasOwnProperty("lastName") &&
         input.hasOwnProperty("password") &&
         input.hasOwnProperty("username") &&
-        input.hasOwnProperty("adminstatus");
-
-    let firstname, lastname, username, password, adminstatus;
+        input.hasOwnProperty("adminstatus") &&
+        input.hasOwnProperty("description");
+    let firstname, lastname, username, password, adminstatus, description;
     if (hasAllProps) {
         firstname = input.firstName;
         lastname = input.lastName;
         password = input.password;
         username = input.username;
         adminstatus = input.adminstatus;
+        description = input.description;
     } else {
         throw "Body does not contain all required fields to create a new user";
     }
@@ -166,7 +167,7 @@ async function create(input) {
             const query = {
                 name: "create-users",
                 text: "insert into users VALUES(($1), ($2), ($3), ($4), ($5), ($6))",
-                values: [newUserid, fullname, "new user", username, "active", encrpytPass]
+                values: [newUserid, fullname, description, username, "active", encrpytPass]
             };
             const queryFullname = {
                 name: "insert-fullname",
