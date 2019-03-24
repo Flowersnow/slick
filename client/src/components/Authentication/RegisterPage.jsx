@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import {user as user1} from '../../actions/userActions';
 
 class RegisterPage extends React.Component {
     constructor(props) {
@@ -42,7 +43,7 @@ class RegisterPage extends React.Component {
         const { user } = this.state;
         const { dispatch } = this.props;
         if (user.firstName && user.lastName && user.username && user.password) {
-            dispatch(user.register(user));
+            dispatch(user1.register(user));
         }
     }
 

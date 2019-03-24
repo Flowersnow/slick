@@ -3,7 +3,7 @@
 } = require("pg");
 const bcrypt = require("bcrypt");
 
-const config = require("config.json");
+const config = require("../config.json");
 const jwt = require("jsonwebtoken");
 
 const {
@@ -12,7 +12,7 @@ const {
     database,
     password,
     port
-} = require("_helpers/config.js");
+} = require("../_helpers/config");
 
 const pool = new Pool({
     user: user,
@@ -61,8 +61,8 @@ async function authenticate(input) {
         throw "Username or password was not supplied in body";
     }
     console.log(username, password, adminstatus);
-    let adminText = 'SELECT users.userid, fullname, password from users, admin where users.email=($1) and (admin.userid = users.userid)';
-    let nonAdminText = 'SELECT userid, fullname, password from users where email=($1)';
+    let adminText = 'SELECT users.userid, fullname, email, password from users, admin where users.email=($1) and (admin.userid = users.userid)';
+    let nonAdminText = 'SELECT userid, fullname, email, password from users where email=($1)';
     let text = adminstatus ? adminText : nonAdminText;
     const query = {
         text: text,
@@ -82,7 +82,7 @@ async function authenticate(input) {
             let resPassword = result.rows[0].password;
             let resId = result.rows[0].userid;
             let resFullname = result.rows[0].fullname;
-            console.log(resFullname);
+            console.log(result.rows[0]);
             let resEmail = result.rows[0].email;
             let {
                 firstname,
@@ -92,7 +92,7 @@ async function authenticate(input) {
             try {
                 let res = await bcrypt.compare(password, resPassword);
                 if (res === true) {
-                    console.log("Check correct");
+                    console.log("Passwords match");
                     const token = jwt.sign({
                         sub: resId
                     }, config.secret);
@@ -101,7 +101,7 @@ async function authenticate(input) {
                         username: resEmail,
                         token: token,
                         firstName: firstname,
-                        resLastname: lastname
+                        lastname: lastname
                     };
                 } else {
                     let error2 = "Username or password is incorrect";

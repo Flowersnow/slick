@@ -50,6 +50,7 @@ function getById(id) {
 }
 
 function register(user) {
+    console.log("I am registering user in service");
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

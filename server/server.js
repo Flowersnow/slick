@@ -2,6 +2,9 @@ require( 'dotenv' ).config();
 const express = require( 'express' );
 const bodyParser = require( 'body-parser' );
 const http = require( 'http' );
+const cors = require('cors');
+const jwt = require('./_helpers/jwt');
+const errorHandler = require('./_helpers/error-handler');
 const { Pool } = require( 'pg' );
 const socketIo = require( 'socket.io' );
 const pool = new Pool();
@@ -10,6 +13,16 @@ const handleIo = require( './websocket' );
 const app = express();
 app.use( bodyParser.json() );
 app.use( bodyParser.urlencoded( { extended: false } ) );
+app.use(cors());
+
+// use JWT auth to secure the api
+app.use(jwt());
+
+// api routes
+app.use('/users', require('./users/users.controller'));
+
+// global error handler
+app.use(errorHandler);
 
 ( async () => {
     const db = await pool.connect();
