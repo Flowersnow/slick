@@ -2,15 +2,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { userActions } from '../_actions';
+import { user } from '../actions';
 
 class HomePage extends React.Component {
     componentDidMount() {
-        this.props.dispatch(userActions.getAll());
+        this.props.dispatch(user.getAll());
     }
 
     handleDeleteUser(id) {
-        return (e) => this.props.dispatch(userActions.delete(id));
+        return (e) => this.props.dispatch(user.delete(id));
     }
 
     render() {

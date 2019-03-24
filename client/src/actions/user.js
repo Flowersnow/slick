@@ -12,12 +12,12 @@ import {
     DELETE_REQUEST,
     DELETE_SUCCESS,
     DELETE_FAILURE
-} from '../actions/actionTypes';
-import { userService } from '../_services';
-import { alertActions } from './';
-import { history } from '../_helpers';
+} from './actionTypes';
+import { userService } from '../_services/index';
+import { alert } from './alert';
+import { history } from '../_helpers/index';
 
-export const userActions = {
+export const user = {
     login,
     logout,
     register,
@@ -37,7 +37,7 @@ function login(username, password, adminstatus) {
                 },
                 error => {
                     dispatch( failure( error.toString() ) );
-                    dispatch( alertActions.error( error.toString() ) );
+                    dispatch( alert.error( error.toString() ) );
                 }
             );
     };
@@ -69,11 +69,11 @@ function register(user) {
                 user => {
                     dispatch( success() );
                     history.push( '/login' );
-                    dispatch( alertActions.success( 'Registration successful' ) );
+                    dispatch( alert.success( 'Registration successful' ) );
                 },
                 error => {
                     dispatch( failure( error.toString() ) );
-                    dispatch( alertActions.error( error.toString() ) );
+                    dispatch( alert.error( error.toString() ) );
                 }
             );
     };

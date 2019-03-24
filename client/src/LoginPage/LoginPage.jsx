@@ -2,14 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { userActions } from '../_actions';
+import { user } from '../actions';
 
 class LoginPage extends React.Component {
     constructor(props) {
         super(props);
 
         // reset login status
-        this.props.dispatch(userActions.logout());
+        this.props.dispatch(user.logout());
 
         this.state = {
             username: '',
@@ -37,7 +37,7 @@ class LoginPage extends React.Component {
         const { username, password, adminStatus} = this.state;
         const { dispatch } = this.props;
         if (username && password) {
-            dispatch(userActions.login(username, password, adminStatus));
+            dispatch(user.login(username, password, adminStatus));
         }
     }
 

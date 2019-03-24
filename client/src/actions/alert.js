@@ -1,6 +1,6 @@
-import { SUCCESS, ERROR, CLEAR } from '../actions/actionTypes';
+import { SUCCESS, ERROR, CLEAR } from './actionTypes';
 
-export const alertActions = {
+export const alert = {
     success,
     error,
     clear
