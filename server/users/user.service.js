@@ -42,8 +42,8 @@ async function authenticate(input) {
         throw "Username or password was not supplied in body";
     }
     console.log(username, password, adminstatus);
-    let adminText = 'SELECT users.userid, fullname, email, password from users, admin where users.email=($1) and (admin.userid = users.userid)';
-    let nonAdminText = 'SELECT userid, fullname, email, password from users where email=($1)';
+    let adminText = 'SELECT users.userid, fullname, username, password from users, admin where users.username=($1) and (admin.userid = users.userid)';
+    let nonAdminText = 'SELECT userid, fullname, username, password from users where username=($1)';
     let text = adminstatus ? adminText : nonAdminText;
     const query = {
         text: text,
@@ -64,7 +64,7 @@ async function authenticate(input) {
             let resId = result.rows[0].userid;
             let resFullname = result.rows[0].fullname;
             console.log(result.rows[0]);
-            let resEmail = result.rows[0].email;
+            let resusername = result.rows[0].username;
             let {
                 firstname,
                 lastname
@@ -79,7 +79,7 @@ async function authenticate(input) {
                     }, config.secret);
                     //replace config.secret
                     return {
-                        username: resEmail,
+                        username: resusername,
                         token: token,
                         firstName: firstname,
                         lastname: lastname
@@ -129,13 +129,13 @@ async function create(input) {
     // validate
     const query = {
         name: "get-username",
-        text: "SELECT email from users where email=($1)",
+        text: "SELECT username from users where username=($1)",
         values: [username]
     };
     try {
         let response = await performQuery(query);
         if (response && response.rowCount >= 1) {
-            throw "Username " + response.rows[0].email + " is already taken";
+            throw "Username " + response.rows[0].username + " is already taken";
         }
         // other create the new user
         // hash password (password must not be null (empty string))
@@ -249,7 +249,7 @@ async function update(username, userParam) {
     }
     const query = {
         name: "get-username",
-        text: "SELECT password, email from users where email=($1)",
+        text: "SELECT password, username from users where username=($1)",
         values: [username]
     };
     try {
@@ -265,7 +265,7 @@ async function update(username, userParam) {
             let encryptNewPass = await bcrypt.hashSync(newpass, 10);
             const query = {
                 name: "update-user",
-                text: "update users set password=($1) where email=($2)",
+                text: "update users set password=($1) where username=($2)",
                 values: [encryptNewPass, username]
             };
             let res = await performQuery(query);
