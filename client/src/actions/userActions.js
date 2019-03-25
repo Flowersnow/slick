@@ -11,7 +11,8 @@ import {
     GETALL_FAILURE,
     DELETE_REQUEST,
     DELETE_SUCCESS,
-    DELETE_FAILURE
+    DELETE_FAILURE,
+    INITIALIZE
 } from './actionTypes';
 import { userService } from '../_services';
 import { alert } from './alert';
@@ -23,12 +24,15 @@ export const user = {
     logout,
     register,
     getAll,
-    delete: _delete
+    delete: _delete,
+    initialize,
+    success
 };
 
 function login(username, password, adminstatus) {
 
     const successSocket = socketAction( success );
+    const initializeSocket = socketAction( initialize );
 
     return dispatch => {
         dispatch( request( { username } ) );
@@ -37,6 +41,7 @@ function login(username, password, adminstatus) {
             .then(
                 user => {
                     dispatch( successSocket( user ) );
+                    dispatch( initializeSocket() );
                     history.push( '/' );
                 },
                 error => {
@@ -50,13 +55,17 @@ function login(username, password, adminstatus) {
         return { type: LOGIN_REQUEST, payload: user }
     }
 
-    function success(user) {
-        return { type: LOGIN_SUCCESS, payload: user }
-    }
-
     function failure(error) {
         return { type: LOGIN_FAILURE, payload: error }
     }
+}
+
+function success(user) {
+    return { type: LOGIN_SUCCESS, payload: user }
+}
+
+function initialize() {
+    return { type: INITIALIZE }
 }
 
 function logout() {

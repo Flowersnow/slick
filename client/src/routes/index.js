@@ -4,20 +4,16 @@ import { connect } from 'react-redux';
 
 import { MainApp } from "../components/MainApp/MainApp";
 import { LoginPage } from "../components/Authentication/LoginPage";
-import { alert } from '../actions/index';
+import { alert, socketAction } from '../actions/index';
 import { history } from '../_helpers/index';
 import { RegisterPage } from "../components/Authentication/RegisterPage";
-// import { PrivateRoute } from "../_components";
+import { user } from '../actions/userActions';
+import { LOGIN_SUCCESS } from "../actions/actionTypes";
+
+const successSocket = socketAction( user.success );
+const initializeSocket = socketAction( user.initialize );
 
 const mapStateToProps = ({ alert }) => ( { alert } );
-
-const PrivateRoute = ({ component: Component, ...rest }) => (
-    <Route {...rest} render={props => (
-        localStorage.getItem('user')
-            ? <Component {...props} />
-            : <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
-    )} />
-);
 
 class Routes extends Component {
     constructor(props) {
@@ -30,8 +26,23 @@ class Routes extends Component {
         } );
     }
 
+    PrivateRoute = ({ component: Component, ...rest }) => {
+
+        const user = localStorage.getItem( 'user' );
+
+        if (user) {
+            this.props.dispatch( successSocket( JSON.parse( user ) ) );
+            this.props.dispatch( initializeSocket() );
+            return <Route {...rest} render={props => ( <Component {...props}/> )}/>
+        } else {
+            return <Route {...rest} render={props => (
+                <Redirect to={{ pathname: '/login', state: { from: props.location } }}/> )}/>
+        }
+    };
+
     render() {
         const { alert } = this.props;
+        const { PrivateRoute } = this;
         return (
             <div className="jumbotron">
                 <div className="container">

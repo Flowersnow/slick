@@ -14,7 +14,7 @@ export const channelReducer = (state = [], { type, payload }) => {
     }
 };
 
-export const currentChannelIdReducer = (state = 1, { type, payload }) => {
+export const currentChannelIdReducer = (state = 'C1', { type, payload }) => {
     switch (type) {
         case CHANGE_CHANNEL: {
             return payload.newChannelId;
