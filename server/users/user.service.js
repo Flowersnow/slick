@@ -60,7 +60,6 @@ async function authenticate(input) {
             let resPassword = result.rows[0].password;
             let resId = result.rows[0].userid;
             let resFullname = result.rows[0].fullname;
-            console.log(result.rows[0]);
             let resUsername = result.rows[0].username;
             let {
                 firstname,
