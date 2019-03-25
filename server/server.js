@@ -5,9 +5,10 @@ const http = require( 'http' );
 const cors = require('cors');
 const jwt = require('./_helpers/jwt');
 const errorHandler = require('./_helpers/error-handler');
-const { Pool } = require( 'pg' );
 const socketIo = require( 'socket.io' );
-const pool = new Pool();
+const {
+    pool,
+} = require("./_helpers/pool");
 const handleIo = require( './websocket' );
 
 const app = express();

@@ -1,29 +1,10 @@
 ﻿const {
-    Pool,
-} = require("pg");
+    pool,
+} = require("../_helpers/pool");
 const bcrypt = require("bcrypt");
 
 const config = require("../config.json");
 const jwt = require("jsonwebtoken");
-
-const {
-    user,
-    host,
-    database,
-    password,
-    port
-} = require("../_helpers/config");
-
-const pool = new Pool({
-    user: user,
-    host: host,
-    database: database,
-    password: password,
-    port: port,
-    ssl: false,
-    max: 10,
-    connectionTimeoutMillis: 10000, // return an error after 10 second if connection could not be established
-})
 
 module.exports = {
     authenticate,
