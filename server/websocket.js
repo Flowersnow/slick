@@ -1,5 +1,15 @@
-const { MESSAGE_SENT, MESSAGE_RECEIVED, CHANGE_CHANNEL } = require( '../client/src/actions/actionTypes' );
-const { saveMessage, sendCurrentChannelMessages } = require( './queries/messages' );
+const {
+    MESSAGE_SENT,
+    MESSAGE_RECEIVED,
+    CHANGE_CHANNEL,
+    LOGIN_SUCCESS,
+    SOCKET_MESSAGE,
+    MESSAGES_RECEIVED,
+    USER_ENTERS,
+    INITIALIZE_USERS,
+    INITIALIZE_CHANNELS
+} = require( '../client/src/actions/actionTypes' );
+const { saveMessage, sendCurrentChannelMessages, getUserInfo, getInitialInfo } = require( './queries/messages' );
 let currentChannelId;
 
 function handleIo(io, db) {
@@ -7,13 +17,14 @@ function handleIo(io, db) {
         console.log( 'connection started' );
         socket.on( CHANGE_CHANNEL, onChannelChange( socket, db ) );
         socket.on( MESSAGE_SENT, onMessage( socket, db ) );
+        socket.on( LOGIN_SUCCESS, onLoginSuccess( socket, db ) );
         socket.on( 'disconnect', (reason) => {
             console.log( 'disconnecting!', reason );
         } );
     } );
 }
 
-const onChannelChange = (socket, db) => ({ newChannelId }) => {
+const onChannelChange = (socket, db) => async ({ newChannelId }) => {
     if (currentChannelId != null) {
         socket.leave( newChannelId, err => {
             if (err) {
@@ -30,7 +41,9 @@ const onChannelChange = (socket, db) => ({ newChannelId }) => {
     function join() {
         socket.join( newChannelId, () => {
             currentChannelId = newChannelId;
-            sendCurrentChannelMessages( db, currentChannelId, socket );
+            sendCurrentChannelMessages( db, currentChannelId ).then(
+                payload => socket.emit( SOCKET_MESSAGE, { type: MESSAGES_RECEIVED, payload } )
+            );
         } );
     }
 };
@@ -43,12 +56,25 @@ const onMessage = (socket, db) => ({ userId, message, channelId, timestamp }) =>
         channelId
     };
 
-    saveMessage( db, payload );
-
     if (channelId !== currentChannelId) {
         payload.message = `Error, current channelId, ${channelId}, did not match currentChannelId, ${currentChannelId}, on server`
     }
-    socket.to( currentChannelId ).emit( MESSAGE_RECEIVED, { type: MESSAGE_RECEIVED, payload } );
+    saveMessage( db, payload );
+
+    socket.to( currentChannelId ).emit( SOCKET_MESSAGE, { type: MESSAGE_RECEIVED, payload } );
+};
+
+const onLoginSuccess = (socket, db) => ({ username }) => {
+    getUserInfo( db, username ).then(
+        payload => socket.emit( SOCKET_MESSAGE, { type: USER_ENTERS, payload } )
+    );
+    getInitialInfo( db ).then(
+        ({users, channels}) => {
+            socket.emit( SOCKET_MESSAGE, { type: INITIALIZE_USERS, payload: users } );
+            socket.emit( SOCKET_MESSAGE, { type: INITIALIZE_CHANNELS, payload: channels } );
+        }
+
+    );
 };
 
 module.exports = handleIo;

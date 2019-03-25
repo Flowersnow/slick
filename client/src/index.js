@@ -22,11 +22,11 @@ const channels = [ { id: 'C5', name: 'general' }, { id: 'C3', name: 'random' } ]
 const users = [ { id: 'U01', name: 'slackbot', isOnline: true }, { id: 'U02', name: 'user1', isOnline: false } ];
 
 const initialState = {
-    users,
+    // users,
     socket: { connected: false },
-    channels,
+    // channels,
     currentChannelId: 'C5',
-    currentUserId: 'U02'
+    // currentUserId: 'U02'
 };
 
 export const store = createStore(

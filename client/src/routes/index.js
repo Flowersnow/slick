@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Router, Route, Switch } from 'react-router-dom';
+import { Router, Route, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { MainApp } from "../components/MainApp/MainApp";
@@ -7,8 +7,17 @@ import { LoginPage } from "../components/Authentication/LoginPage";
 import { alert } from '../actions/index';
 import { history } from '../_helpers/index';
 import { RegisterPage } from "../components/Authentication/RegisterPage";
+// import { PrivateRoute } from "../_components";
 
 const mapStateToProps = ({ alert }) => ( { alert } );
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+    <Route {...rest} render={props => (
+        localStorage.getItem('user')
+            ? <Component {...props} />
+            : <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
+    )} />
+);
 
 class Routes extends Component {
     constructor(props) {
@@ -32,7 +41,7 @@ class Routes extends Component {
                         }
                         <Router history={history}>
                             <Switch>
-                                <Route path="/" exact component={MainApp}/>
+                                <PrivateRoute path="/" exact component={MainApp}/>
                                 <div>
                                     <link rel="stylesheet"
                                           href="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>

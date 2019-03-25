@@ -13,9 +13,10 @@ import {
     DELETE_SUCCESS,
     DELETE_FAILURE
 } from './actionTypes';
-import { userService } from '../_services/index';
+import { userService } from '../_services';
 import { alert } from './alert';
-import { history } from '../_helpers/index';
+import { history } from '../_helpers';
+import { socketAction } from "./socket";
 
 export const user = {
     login,
@@ -26,13 +27,16 @@ export const user = {
 };
 
 function login(username, password, adminstatus) {
+
+    const successSocket = socketAction( success );
+
     return dispatch => {
         dispatch( request( { username } ) );
 
         userService.login( username, password, adminstatus )
             .then(
                 user => {
-                    dispatch( success( user ) );
+                    dispatch( successSocket( user ) );
                     history.push( '/' );
                 },
                 error => {
@@ -43,15 +47,15 @@ function login(username, password, adminstatus) {
     };
 
     function request(user) {
-        return { type: LOGIN_REQUEST, user }
+        return { type: LOGIN_REQUEST, payload: user }
     }
 
     function success(user) {
-        return { type: LOGIN_SUCCESS, user }
+        return { type: LOGIN_SUCCESS, payload: user }
     }
 
     function failure(error) {
-        return { type: LOGIN_FAILURE, error }
+        return { type: LOGIN_FAILURE, payload: error }
     }
 }
 
@@ -69,7 +73,7 @@ function register(user) {
                 user => {
                     dispatch( success() );
                     history.push( '/login' );
-                    dispatch( alert.success( 'Registration successful' ));
+                    dispatch( alert.success( 'Registration successful' ) );
                 },
                 error => {
                     dispatch( failure( error.toString() ) );

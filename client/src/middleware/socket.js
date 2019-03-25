@@ -1,6 +1,6 @@
 import { channelChanged, socketAction, socketConnected, socketDisconnected, socketError } from '../actions';
 import * as socketIo from 'socket.io-client';
-import { MESSAGE_RECEIVED } from "../actions/actionTypes";
+import { SOCKET_MESSAGE } from "../actions/actionTypes";
 import isFunction from 'lodash/isFunction';
 
 export const defaultPrefix = "socket/";
@@ -27,7 +27,7 @@ const handleSocketEvents = (socket, { dispatch, getState }) => {
     socket.on( 'disconnect', (event) => dispatch( socketDisconnected( event ) ) );
     socket.on( 'error', (error) => dispatch( socketError( error ) ) );
 
-    socket.on( MESSAGE_RECEIVED, data => {
+    socket.on( SOCKET_MESSAGE, data => {
         if (data.type && data.payload) {
             dispatch( data );
         } else {
