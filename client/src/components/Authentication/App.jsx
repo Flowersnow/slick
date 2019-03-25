@@ -26,8 +26,8 @@ class App extends React.Component {
             <div className="jumbotron">
                 <div className="container">
                     <div className="col-sm-8 col-sm-offset-2">
-                        {alert.message &&
-                            <div className={`alert ${alert.type}`}>{alert.message}</div>
+                        {alert.payload &&
+                            <div className={`alert ${alert.type}`}>{alert.payload}</div>
                         }
                         <Router history={history}>
                             <div>
@@ -45,6 +45,7 @@ class App extends React.Component {
 
 function mapStateToProps(state) {
     const { alert } = state;
+    console.log("In App jsx");
     return {
         alert
     };

@@ -7,13 +7,13 @@ export const alert = {
 };
 
 function success(message) {
-    return { type: SUCCESS, message };
+    return { type: SUCCESS, payload: message };
 }
 
 function error(message) {
-    return { type: ERROR, message };
+    return { type: ERROR, payload: message};
 }
 
 function clear() {
-    return { type: CLEAR };
+    return { type: CLEAR, payload: null };
 }

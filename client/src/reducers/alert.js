@@ -5,12 +5,12 @@ export function alert(state = {}, action) {
         case SUCCESS:
             return {
                 type: 'alert-success',
-                message: action.message
+                payload: action.payload
             };
         case ERROR:
             return {
                 type: 'alert-danger',
-                message: action.message
+                payload: action.payload
             };
         case CLEAR:
             return {};

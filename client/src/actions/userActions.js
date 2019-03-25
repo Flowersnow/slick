@@ -69,7 +69,7 @@ function register(user) {
                 user => {
                     dispatch( success() );
                     history.push( '/login' );
-                    dispatch( alert.success( 'Registration successful' ) );
+                    dispatch( alert.success( 'Registration successful' ));
                 },
                 error => {
                     dispatch( failure( error.toString() ) );
