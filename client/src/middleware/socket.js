@@ -1,6 +1,7 @@
 import { channelChanged, socketAction, socketConnected, socketDisconnected, socketError } from '../actions';
 import * as socketIo from 'socket.io-client';
 import { MESSAGE_RECEIVED } from "../actions/actionTypes";
+import isFunction from 'lodash/isFunction';
 
 export const defaultPrefix = "socket/";
 
@@ -20,7 +21,7 @@ const handleSocketEvents = (socket, { dispatch, getState }) => {
 
     socket.on( 'connect', (event) => {
         dispatch( socketConnected( event ) );
-        dispatch( socketAction( channelChanged )(getState().currentChannelId) );
+        dispatch( socketAction( channelChanged )( getState().currentChannelId ) );
     } );
 
     socket.on( 'disconnect', (event) => dispatch( socketDisconnected( event ) ) );
@@ -36,11 +37,15 @@ const handleSocketEvents = (socket, { dispatch, getState }) => {
 };
 
 const handleSocketActions = socket => next => action => {
-    let { type, payload } = action;
-    // Check if type calls for the payload to be routed via socket
-    if (type.indexOf( defaultPrefix ) === 0) {
-        type = type.slice( defaultPrefix.length ); // strip prefix
-        socket.emit( type, payload );
+    if (!isFunction( action )) {
+        let { type, payload } = action;
+        // Check if type calls for the payload to be routed via socket
+        if (type.indexOf( defaultPrefix ) === 0) {
+            type = type.slice( defaultPrefix.length ); // strip prefix
+            socket.emit( type, payload );
+        }
+        return next( { type, payload } );
+    } else {
+        return next( action );
     }
-    return next( { type, payload } );
 };

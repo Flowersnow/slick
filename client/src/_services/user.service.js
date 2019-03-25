@@ -1,5 +1,5 @@
 import { authHeader } from '../_helpers';
-const apiUrl = require("../_helpers/config.js");
+import { apiUrl } from '../_helpers/config.js';
 export const userService = {
     login,
     logout,

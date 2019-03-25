@@ -79,15 +79,15 @@ function register(user) {
     };
 
     function request(user) {
-        return { type: REGISTER_REQUEST, user }
+        return { type: REGISTER_REQUEST, payload: user }
     }
 
     function success(user) {
-        return { type: REGISTER_SUCCESS, user }
+        return { type: REGISTER_SUCCESS, payload: user }
     }
 
     function failure(error) {
-        return { type: REGISTER_FAILURE, error }
+        return { type: REGISTER_FAILURE, payload: error }
     }
 }
 
