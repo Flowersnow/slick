@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Input as UiInput } from 'semantic-ui-react';
 import { connect } from 'react-redux';
-import { socketAction, messageSent } from "../actions";
-import { currentChannelSelector, currentUserSelector } from "../selectors";
+import { socketAction, messageSent } from "../../actions/index";
+import { currentChannelSelector, currentUserSelector } from "../../selectors/index";
 
 const InputDiv = styled.div`
   grid-column: 2;

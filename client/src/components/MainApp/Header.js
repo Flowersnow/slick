@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { Header as UiHeader } from 'semantic-ui-react';
-import { currentChannelSelector } from "../selectors";
+import { currentChannelSelector } from "../../selectors/index";
 
 const HeaderDiv = styled.div`
   grid-column: 2;

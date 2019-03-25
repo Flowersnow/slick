@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { Comment } from 'semantic-ui-react';
 import find from 'lodash/find';
-import { messagesForChannelSelector } from "../selectors";
+import { messagesForChannelSelector } from "../../selectors/index";
 
 const MessagesDiv = styled.div`
   grid-column: 2;
