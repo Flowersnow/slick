@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { channelChanged, socketAction } from "../actions";
-import { currentChannelSelector, currentUserSelector } from "../selectors";
+import { channelChanged, socketAction } from "../../actions/index";
+import { currentChannelSelector, currentUserSelector } from "../../selectors/index";
 
 const SidebarDiv = styled.div`
   grid-column: 1;

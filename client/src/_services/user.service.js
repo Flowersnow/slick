@@ -1,5 +1,5 @@
 import { authHeader } from '../_helpers';
-const apiUrl = require("../_helpers/config.js");
+import { apiUrl } from '../_helpers/config.js';
 export const userService = {
     login,
     logout,
@@ -50,6 +50,7 @@ function getById(id) {
 }
 
 function register(user) {
+    console.log("I am registering user in service");
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

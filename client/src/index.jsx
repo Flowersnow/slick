@@ -3,15 +3,11 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 
 import { store } from './_helpers';
-import { App } from './App';
-
-// setup fake backend
-//import { configureFakeBackend } from './_helpers';
-//configureFakeBackend();
+import { LoginApp } from './components/Authentication/App.jsx';
 
 render(
     <Provider store={store}>
-        <App />
+        <LoginApp />
     </Provider>,
     document.getElementById('app')
 );
