@@ -39,7 +39,7 @@ async function authenticate(input) {
         password = input.password;
         adminstatus = input.adminstatus;
     } else {
-        throw "Username or password was not supplied in body";
+        throw "Username or password or adminstatus was not supplied in body";
     }
     let adminText = 'SELECT users.userid, fullname, username, password from users, admin where users.username=($1) and (admin.userid = users.userid)';
     let nonAdminText = 'SELECT userid, fullname, username, password from users where username=($1)';
