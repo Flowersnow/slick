@@ -155,6 +155,7 @@ function _delete(id) {
     }
 }
 
-function changeViewingUser(userId) {
-    return { type: CHANGE_VIEWING_USER, payload: userId }
-};
+function changeViewingUser(id) {
+    history.push('/user');
+    return { type: CHANGE_VIEWING_USER, payload: id }
+}

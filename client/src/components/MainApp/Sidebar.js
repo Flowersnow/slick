@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { channelChanged, socketAction, channelCreated } from "../../actions";
+import { channelChanged, socketAction, channelCreated, user } from "../../actions";
 import { currentChannelSelector, currentUserSelector } from "../../selectors";
 import { Button, Modal, Form } from 'semantic-ui-react';
 
@@ -63,7 +63,8 @@ const mapStateToProps = state => ( {
 } );
 const mapDispatchToProps = {
     channelChanged: socketAction( channelChanged ),
-    channelCreated: socketAction( channelCreated )
+    channelCreated: socketAction( channelCreated ),
+    changeViewingUser: user.changeViewingUser
 };
 
 const Bubble = ({ on }) => ( on ? <GreenCircle/> : '○' );
@@ -79,12 +80,16 @@ export class Sidebar extends Component {
         this.props.channelChanged( newChannelId );
     };
 
+    goToUserProfile = (user) => () => {
+        this.props.changeViewingUser(user);
+    };
+
     renderChannels = ({ id, name }) => <SidebarListItem onClick={this.onChangeChannel( id )}
                                                         key={`channel-${id}`}># {name}</SidebarListItem>;
 
-    renderUsers = ({ id, name, isOnline }) => (
-        <SidebarListItem key={`user-${id}`}>
-            <Bubble on={isOnline}/> {name}
+    renderUsers = (user) => (
+        <SidebarListItem key={`user-${user.id}`} onClick={this.goToUserProfile(user)}>
+            <Bubble on={user.isOnline}/> {user.name}
         </SidebarListItem>
     );
 
