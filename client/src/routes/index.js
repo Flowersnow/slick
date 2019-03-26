@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 
 import { MainApp } from "../components/MainApp/MainApp";
 import { LoginPage } from "../components/Authentication/LoginPage";
+import UserProfile from "../components/User/UserProfile";
+import { UserStats} from "../components/User/UserStats";
 import { alert, socketAction } from '../actions/index';
 import { history } from '../_helpers/index';
 import { RegisterPage } from "../components/Authentication/RegisterPage";
@@ -58,6 +60,8 @@ class Routes extends Component {
                                           href="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
                                     <Route path="/login" component={LoginPage}/>
                                     <Route path="/register" component={RegisterPage}/>
+                                    <Route path="/user"  component={UserProfile}/>
+                                    <Route path="/byuserstats" component = {UserStats}/>
                                 </div>
                             </Switch>
                         </Router>

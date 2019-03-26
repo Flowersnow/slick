@@ -12,7 +12,8 @@ import {
     DELETE_REQUEST,
     DELETE_SUCCESS,
     DELETE_FAILURE,
-    INITIALIZE
+    INITIALIZE,
+    CHANGE_VIEWING_USER
 } from './actionTypes';
 import { userService } from '../_services';
 import { alert } from './alert';
@@ -26,7 +27,8 @@ export const user = {
     getAll,
     delete: _delete,
     initialize,
-    success
+    success,
+    changeViewingUser,
 };
 
 function login(username, password, adminstatus) {
@@ -152,3 +154,7 @@ function _delete(id) {
         return { type: DELETE_FAILURE, id, error }
     }
 }
+
+function changeViewingUser(userId) {
+    return { type: CHANGE_VIEWING_USER, payload: userId }
+};
