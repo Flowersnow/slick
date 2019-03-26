@@ -1,5 +1,9 @@
-import { authHeader } from '../_helpers';
-import { apiUrl } from '../_helpers/config.js';
+import {
+    authHeader
+} from '../_helpers';
+import {
+    apiUrl
+} from '../_helpers/config.js';
 export const userService = {
     login,
     logout,
@@ -13,8 +17,14 @@ export const userService = {
 function login(username, password, adminstatus) {
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, adminstatus})
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username,
+            password,
+            adminstatus
+        })
     };
 
     return fetch(`${apiUrl}/users/authenticate`, requestOptions)
@@ -53,7 +63,9 @@ function register(user) {
     console.log("I am registering user in service");
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify(user)
     };
 
@@ -63,7 +75,10 @@ function register(user) {
 function update(user) {
     const requestOptions = {
         method: 'PUT',
-        headers: { ...authHeader(), 'Content-Type': 'application/json' },
+        headers: {
+            ...authHeader(),
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify(user)
     };
 

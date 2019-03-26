@@ -6,4 +6,5 @@ module.exports = {
 	database: process.env.PGDATABASE,
 	password: process.env.PGPASSWORD,
 	port: process.env.PGPORT,
+	production: process.env.PRODUCTION,
 };
