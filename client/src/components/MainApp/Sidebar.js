@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { channelChanged, socketAction } from "../../actions/index";
-import { currentChannelSelector, currentUserSelector } from "../../selectors/index";
+import { channelChanged, socketAction, channelCreated } from "../../actions";
+import { currentChannelSelector, currentUserSelector } from "../../selectors";
+import { Button, Modal, Form } from 'semantic-ui-react';
 
 const SidebarDiv = styled.div`
   grid-column: 1;
@@ -25,7 +26,10 @@ const SidebarListItem = styled.li`
   }
 `;
 
-const SidebarHeader = styled.div`padding-left: 10px;`;
+const SidebarHeader = styled.div`
+  grid-column: 1;
+  padding-left: 10px;
+`;
 
 const SlickHeader = styled.h1`
   color: #fff;
@@ -40,17 +44,35 @@ const GreenCircle = styled.span`
   display: inline-block;
 `;
 
+const AddingHeaderDiv = styled.div`
+  display: grid;
+  height: min-content;
+  grid-template-columns: 80% 20%;
+`;
+
+const StyledModal = styled( Modal )`
+  grid-column: 2;
+`;
+
 const mapStateToProps = state => ( {
     users: state.users,
     channels: state.channels,
     currentUser: currentUserSelector( state.users, state.currentUserId ),
     currentChannel: currentChannelSelector( state.channels, state.currentChannelId )
 } );
-const mapDispatchToProps = { channelChanged: socketAction( channelChanged ) };
+const mapDispatchToProps = {
+    channelChanged: socketAction( channelChanged ),
+    channelCreated: socketAction( channelCreated )
+};
 
 const Bubble = ({ on }) => ( on ? <GreenCircle/> : '○' );
 
 export class Sidebar extends Component {
+    state = {
+        newChannelName: '',
+        newChannelDescription: '',
+        modalOpen: false
+    };
 
     onChangeChannel = (newChannelId) => () => {
         this.props.channelChanged( newChannelId );
@@ -65,11 +87,43 @@ export class Sidebar extends Component {
         </SidebarListItem>
     );
 
+    hidden = { visibility: 'hidden' };
+
+    handleOpen = () => this.setState({ modalOpen: true });
+
+    handleClose = () => {
+        this.createChannel();
+        this.setState({ modalOpen: false });
+    };
+
+    renderButton = ({ isAdmin }) => ( isAdmin
+        ? <Button icon='plus' size='mini' circular='true' onClick={this.handleOpen}/>
+        : <Button style={this.hidden}/> );
+
+    createChannel = () => {
+        const { newChannelName, newChannelDescription } = this.state;
+        const { currentUser } = this.props;
+        if (newChannelName && newChannelDescription) {
+            this.props.channelCreated( {
+                name: newChannelName,
+                description: newChannelDescription,
+                channelAdmin: currentUser.id
+            } );
+        }
+        this.setState( { newChannelName: '', newChannelDescription: '' } );
+    };
+
+    onFormUpdate = (e, { name, value }) => this.setState( { [ name ]: value } );
+
     render() {
         const {
             renderChannels,
             renderUsers,
-            props: { users, currentUser, channels }
+            renderButton,
+            onFormUpdate,
+            handleClose,
+            props: { users, currentUser, channels },
+            state: { newChannelName, newChannelDescription, modalOpen }
         } = this;
 
         return (
@@ -80,7 +134,37 @@ export class Sidebar extends Component {
                 </SidebarHeader>
                 <div>
                     <SidebarList>
-                        <SidebarListItem>Channels</SidebarListItem>
+                        <AddingHeaderDiv>
+                            <SidebarListItem>Channels</SidebarListItem>
+                            <StyledModal trigger={renderButton( currentUser )}
+                                         centered={false}
+                                         open={modalOpen}>
+                                <Modal.Header>Add a channel</Modal.Header>
+                                <Modal.Content>
+                                    <Form>
+                                        <Form.Field>
+                                            <label>Channel Name</label>
+                                            <Form.Input
+                                                placeholder='Channel Name'
+                                                name='newChannelName'
+                                                value={newChannelName}
+                                                onChange={onFormUpdate}
+                                            />
+                                        </Form.Field>
+                                        <Form.Field>
+                                            <label>Channel Description</label>
+                                            <Form.Input
+                                                placeholder='Channel Description'
+                                                name='newChannelDescription'
+                                                value={newChannelDescription}
+                                                onChange={onFormUpdate}
+                                            />
+                                        </Form.Field>
+                                        <Button type='submit' onClick={handleClose}>Submit</Button>
+                                    </Form>
+                                </Modal.Content>
+                            </StyledModal>
+                        </AddingHeaderDiv>
                         {channels.map( renderChannels )}
                     </SidebarList>
                 </div>

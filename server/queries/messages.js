@@ -55,7 +55,12 @@ async function getUserInfo(db, username) {
 
 async function getInitialInfo(db) {
     const usersQuery = {
-        text: 'SELECT * FROM users'
+        text: 'SELECT u.userid AS id, fullname AS name, description, username, status,\n' +
+            '\tCASE WHEN a.userid IS NOT NULL\n' +
+            '\tTHEN true\n' +
+            '\tELSE false\n' +
+            '\tEND AS "isAdmin"\n' +
+            '\tFROM users u LEFT JOIN ADMIN a ON u.userid = a.userid'
     };
     const channelsQuery = {
         text: 'SELECT * FROM channel'
@@ -64,12 +69,13 @@ async function getInitialInfo(db) {
         const usersResponse = await db.query( usersQuery );
         const channelsResponse = await db.query( channelsQuery );
 
-        const users = usersResponse.rows.map( ({ userid, fullname, description, username, status }) => ( {
-            id: userid,
-            name: fullname,
+        const users = usersResponse.rows.map( ({ id, name, description, username, status, isAdmin }) => ( {
+            id,
+            name,
             description,
             username,
-            isOnline: status === "active"
+            isOnline: status === "active",
+            isAdmin
         } ) );
 
         const channels = channelsResponse.rows.map( ({ channelid, channelname, description, ismanagedbyadminid }) => (
@@ -86,9 +92,24 @@ async function getInitialInfo(db) {
     }
 }
 
+async function createNewChannel(db, { name, description, channelAdmin }) {
+    const values = [ `C${uuid()}`, name, description, channelAdmin ];
+    console.log( values );
+    const query = {
+        text: 'INSERT INTO channel VALUES($1, $2, $3, $4)',
+        values
+    };
+    try {
+        await db.query( query );
+        return { id: values[ 0 ], name, description, channelAdmin };
+    } catch (err) {
+        logError( err );
+    }
+}
+
 function logError(err) {
     console.log( 'Error while querying database!' );
     console.log( err );
 }
 
-module.exports = { saveMessage, sendCurrentChannelMessages, getUserInfo, getInitialInfo };
+module.exports = { saveMessage, sendCurrentChannelMessages, getUserInfo, getInitialInfo, createNewChannel };

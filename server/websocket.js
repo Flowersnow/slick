@@ -2,6 +2,8 @@ const {
     MESSAGE_SENT,
     MESSAGE_RECEIVED,
     CHANGE_CHANNEL,
+    CREATE_CHANNEL,
+    NEW_CHANNEL,
     LOGIN_SUCCESS,
     SOCKET_MESSAGE,
     MESSAGES_RECEIVED,
@@ -10,7 +12,14 @@ const {
     INITIALIZE_USERS,
     INITIALIZE_CHANNELS
 } = require( '../client/src/actions/actionTypes' );
-const { saveMessage, sendCurrentChannelMessages, getUserInfo, getInitialInfo } = require( './queries/messages' );
+const {
+    saveMessage,
+    sendCurrentChannelMessages,
+    getUserInfo,
+    getInitialInfo,
+    createNewChannel
+} = require( './queries/messages' );
+
 let currentChannelId;
 
 function handleIo(io, db) {
@@ -19,7 +28,8 @@ function handleIo(io, db) {
         socket.on( CHANGE_CHANNEL, onChannelChange( socket, db ) );
         socket.on( MESSAGE_SENT, onMessage( socket, db ) );
         socket.on( LOGIN_SUCCESS, onLoginSuccess( socket, db ) );
-        socket.on( INITIALIZE, initialize(socket, db) );
+        socket.on( INITIALIZE, initialize( socket, db ) );
+        socket.on( CREATE_CHANNEL, createChannel( socket, db ) );
         socket.on( 'disconnect', (reason) => {
             console.log( 'disconnecting!', reason );
         } );
@@ -74,11 +84,16 @@ const onLoginSuccess = (socket, db) => ({ username }) => {
 
 const initialize = (socket, db) => () => {
     getInitialInfo( db ).then(
-        ({users, channels}) => {
+        ({ users, channels }) => {
             socket.emit( SOCKET_MESSAGE, { type: INITIALIZE_USERS, payload: users } );
             socket.emit( SOCKET_MESSAGE, { type: INITIALIZE_CHANNELS, payload: channels } );
         }
     );
+};
+
+const createChannel = (socket, db) => (channelInfo) => {
+    createNewChannel( db, channelInfo )
+        .then( newChannel => socket.emit( SOCKET_MESSAGE, { type: NEW_CHANNEL, payload: newChannel } ) );
 };
 
 module.exports = handleIo;
