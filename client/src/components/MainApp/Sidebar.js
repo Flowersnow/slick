@@ -10,6 +10,7 @@ const SidebarDiv = styled.div`
   grid-row: 1 / 4;
   background-color: #4e3a4c;
   color: #958993;
+  overflow-y: auto;
 `;
 
 const SidebarList = styled.ul`
