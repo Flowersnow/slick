@@ -39,9 +39,8 @@ async function authenticate(input) {
         password = input.password;
         adminstatus = input.adminstatus;
     } else {
-        throw "Username or password was not supplied in body";
+        throw "Username or password or adminstatus was not supplied in body";
     }
-    console.log(username, password, adminstatus);
     let adminText = 'SELECT users.userid, fullname, username, password from users, admin where users.username=($1) and (admin.userid = users.userid)';
     let nonAdminText = 'SELECT userid, fullname, username, password from users where username=($1)';
     let text = adminstatus ? adminText : nonAdminText;
@@ -51,7 +50,6 @@ async function authenticate(input) {
     };
     try {
         let result = await performQuery(query);
-        console.log(result.rows);
         if (!result || result.rowCount < 1) {
             if (adminstatus) {
                 throw "Username not found as admin";
@@ -59,12 +57,10 @@ async function authenticate(input) {
                 throw "Username not found";
             }
         } else {
-            //   console.log(result.rows[0]);
             let resPassword = result.rows[0].password;
             let resId = result.rows[0].userid;
             let resFullname = result.rows[0].fullname;
-            console.log(result.rows[0]);
-            let resusername = result.rows[0].username;
+            let resUsername = result.rows[0].username;
             let {
                 firstname,
                 lastname
@@ -73,13 +69,12 @@ async function authenticate(input) {
             try {
                 let res = await bcrypt.compare(password, resPassword);
                 if (res === true) {
-                    console.log("Passwords match");
                     const token = jwt.sign({
                         sub: resId
                     }, config.secret);
                     //replace config.secret
                     return {
-                        username: resusername,
+                        username: resUsername,
                         token: token,
                         firstName: firstname,
                         lastname: lastname
@@ -107,7 +102,6 @@ function getFirstandLastNames(fullname) {
     };
 }
 async function create(input) {
-    console.log(input);
     let hasAllProps =
         input.hasOwnProperty("firstName") &&
         input.hasOwnProperty("lastName") &&

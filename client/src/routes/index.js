@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
-import { Router, Route, Switch } from 'react-router-dom';
+import { Router, Route, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { MainApp } from "../components/MainApp/MainApp";
 import { LoginPage } from "../components/Authentication/LoginPage";
-import { alert } from '../actions/index';
+import UserProfile from "../components/User/UserProfile";
+import { UserStats} from "../components/User/UserStats";
+import { alert, socketAction } from '../actions/index';
 import { history } from '../_helpers/index';
 import { RegisterPage } from "../components/Authentication/RegisterPage";
+import { user } from '../actions/userActions';
+import { LOGIN_SUCCESS } from "../actions/actionTypes";
+
+const successSocket = socketAction( user.success );
+const initializeSocket = socketAction( user.initialize );
 
 const mapStateToProps = ({ alert }) => ( { alert } );
 
@@ -21,8 +28,23 @@ class Routes extends Component {
         } );
     }
 
+    PrivateRoute = ({ component: Component, ...rest }) => {
+
+        const user = localStorage.getItem( 'user' );
+
+        if (user) {
+            this.props.dispatch( successSocket( JSON.parse( user ) ) );
+            this.props.dispatch( initializeSocket() );
+            return <Route {...rest} render={props => ( <Component {...props}/> )}/>
+        } else {
+            return <Route {...rest} render={props => (
+                <Redirect to={{ pathname: '/login', state: { from: props.location } }}/> )}/>
+        }
+    };
+
     render() {
         const { alert } = this.props;
+        const { PrivateRoute } = this;
         return (
             <div className="jumbotron">
                 <div className="container">
@@ -32,12 +54,14 @@ class Routes extends Component {
                         }
                         <Router history={history}>
                             <Switch>
-                                <Route path="/" exact component={MainApp}/>
+                                <PrivateRoute path="/" exact component={MainApp}/>
                                 <div>
                                     <link rel="stylesheet"
                                           href="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
                                     <Route path="/login" component={LoginPage}/>
                                     <Route path="/register" component={RegisterPage}/>
+                                    <Route path="/user"  component={UserProfile}/>
+                                    <Route path="/byuserstats" component = {UserStats}/>
                                 </div>
                             </Switch>
                         </Router>

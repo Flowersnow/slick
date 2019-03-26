@@ -10,6 +10,7 @@ const {
     pool,
 } = require("./_helpers/pool");
 const handleIo = require( './websocket' );
+const {production} = require("./_helpers/config");
 
 const app = express();
 app.use( bodyParser.json() );
@@ -28,17 +29,13 @@ app.use(errorHandler);
 ( async () => {
     const db = await pool.connect();
     try {
-        // let res = await db.query( 'SELECT * FROM "testSchema"."testTable"' );
-        // console.log( res.rows );
-        // const values = [ res.rows[ res.rows.length - 1 ].col1ID + 1, null, 2 ];
-        // await db.query( 'INSERT INTO "testSchema"."testTable"("col1ID", "col2", "col3") VALUES ($1, $2, $3)', values );
-        // res = await db.query( 'SELECT * FROM "testSchema"."testTable"' );
-        // console.log( res.rows );
-
         app.get( '/', (req, res) => res.send( 'Hello World' ) );
         const server = http.Server( app );
-        server.listen( 3001 );
-        console.log("server started on hardcoed port 3001");
+        let prodMode = production === "true"? true : false; // .env production is a string not a bool
+        prodMode? console.log("In production") : console.log("starting on Localhost");
+        const host = prodMode? "0.0.0.0" : "localhost";
+        server.listen( 3001 , host);
+        console.log("server started on hardcoded port 3001");
         const io = socketIo( server );
 
         handleIo( io, db );

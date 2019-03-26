@@ -11,28 +11,39 @@ import {
     GETALL_FAILURE,
     DELETE_REQUEST,
     DELETE_SUCCESS,
-    DELETE_FAILURE
+    DELETE_FAILURE,
+    INITIALIZE,
+    CHANGE_VIEWING_USER
 } from './actionTypes';
-import { userService } from '../_services/index';
+import { userService } from '../_services';
 import { alert } from './alert';
-import { history } from '../_helpers/index';
+import { history } from '../_helpers';
+import { socketAction } from "./socket";
 
 export const user = {
     login,
     logout,
     register,
     getAll,
-    delete: _delete
+    delete: _delete,
+    initialize,
+    success,
+    changeViewingUser,
 };
 
 function login(username, password, adminstatus) {
+
+    const successSocket = socketAction( success );
+    const initializeSocket = socketAction( initialize );
+
     return dispatch => {
         dispatch( request( { username } ) );
 
         userService.login( username, password, adminstatus )
             .then(
                 user => {
-                    dispatch( success( user ) );
+                    dispatch( successSocket( user ) );
+                    dispatch( initializeSocket() );
                     history.push( '/' );
                 },
                 error => {
@@ -43,16 +54,20 @@ function login(username, password, adminstatus) {
     };
 
     function request(user) {
-        return { type: LOGIN_REQUEST, user }
-    }
-
-    function success(user) {
-        return { type: LOGIN_SUCCESS, user }
+        return { type: LOGIN_REQUEST, payload: user }
     }
 
     function failure(error) {
-        return { type: LOGIN_FAILURE, error }
+        return { type: LOGIN_FAILURE, payload: error }
     }
+}
+
+function success(user) {
+    return { type: LOGIN_SUCCESS, payload: user }
+}
+
+function initialize() {
+    return { type: INITIALIZE }
 }
 
 function logout() {
@@ -69,7 +84,7 @@ function register(user) {
                 user => {
                     dispatch( success() );
                     history.push( '/login' );
-                    dispatch( alert.success( 'Registration successful' ));
+                    dispatch( alert.success( 'Registration successful' ) );
                 },
                 error => {
                     dispatch( failure( error.toString() ) );
@@ -139,3 +154,7 @@ function _delete(id) {
         return { type: DELETE_FAILURE, id, error }
     }
 }
+
+function changeViewingUser(userId) {
+    return { type: CHANGE_VIEWING_USER, payload: userId }
+};

@@ -15,7 +15,6 @@ module.exports = router;
 
 function authenticate(req, res, next) {
     userService.authenticate(req.body).then(function (response) {
-        console.log(response);
         res.status(200).json(response);
     }).catch(err => {
         next(err);
