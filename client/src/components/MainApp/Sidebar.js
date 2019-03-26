@@ -176,7 +176,7 @@ export class Sidebar extends Component {
                 </div>
                 <div>
                     <SidebarList>
-                        <SidebarListItem>Direct Messages</SidebarListItem>
+                        <SidebarListItem>Profiles</SidebarListItem>
                         {users.map( renderUsers )}
                     </SidebarList>
                 </div>
