@@ -71,6 +71,7 @@ function initialize() {
 }
 
 function logout() {
+    history.push('/login');
     userService.logout();
     return { type: LOGOUT };
 }

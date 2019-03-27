@@ -123,7 +123,6 @@ async function saveThreadMessage(db, { message, channelId, userId, isreplytotext
         values: [ message, message.length ],
     };
     const values = [ `T${uuid()}`, timestamp, userId, isreplytotextid, channelId, message ];
-    console.log(values);
     const messageQuery = {
         text: 'INSERT INTO messages VALUES($1, $2, NULL, $3, $4, $5, $6)',
         values

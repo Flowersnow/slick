@@ -28,13 +28,34 @@ const SidebarListItem = styled.li`
 `;
 
 const SidebarHeader = styled.div`
-  grid-column: 1;
   padding-left: 10px;
+  display: grid;
+  height: min-content;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: 50% 50%;
 `;
 
-const SlickHeader = styled.h1`
+const SlickHeaderLeft = styled.h1`
   color: #fff;
   font-size: 20px;
+  grid-column: 1;
+  grid-row: 1;
+`;
+
+const SlickHeaderRight = styled.h1`
+  color: #fff;
+  font-size: 20px;
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  text-align: end;
+`;
+
+const Username = styled.h4`
+  color: #fff;
+  grid-column: 1 / 2;
+  grid-row: 2;
+  margin: 0;
 `;
 
 const GreenCircle = styled.span`
@@ -48,7 +69,7 @@ const GreenCircle = styled.span`
 const AddingHeaderDiv = styled.div`
   display: grid;
   height: min-content;
-  grid-template-columns: 80% 20%;
+  grid-template-columns: 90% 10%;
 `;
 
 const StyledModal = styled( Modal )`
@@ -65,7 +86,8 @@ const mapDispatchToProps = {
     channelChanged: socketAction( channelChanged ),
     channelCreated: socketAction( channelCreated ),
     changeViewingUser: user.changeViewingUser,
-    clearThread
+    clearThread,
+    logout: user.logout
 };
 
 const Bubble = ({ on }) => ( on ? <GreenCircle/> : '○' );
@@ -123,6 +145,8 @@ export class Sidebar extends Component {
 
     onFormUpdate = (e, { name, value }) => this.setState( { [ name ]: value } );
 
+    logout = () => (this.props.logout());
+
     render() {
         const {
             renderChannels,
@@ -130,6 +154,7 @@ export class Sidebar extends Component {
             renderButton,
             onFormUpdate,
             handleClose,
+            logout,
             props: { users, currentUser, channels },
             state: { newChannelName, newChannelDescription, modalOpen }
         } = this;
@@ -137,8 +162,11 @@ export class Sidebar extends Component {
         return (
             <SidebarDiv>
                 <SidebarHeader>
-                    <SlickHeader>Slick</SlickHeader>
-                    {currentUser.name}
+                    <SlickHeaderLeft>Slick</SlickHeaderLeft>
+                    <SlickHeaderRight>
+                        <Button icon='log out' size='mini' circular onClick={logout} />
+                    </SlickHeaderRight>
+                    <Username>{currentUser.name}</Username>
                 </SidebarHeader>
                 <div>
                     <SidebarList>
