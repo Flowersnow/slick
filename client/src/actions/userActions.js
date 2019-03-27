@@ -122,11 +122,11 @@ function getAll() {
     }
 
     function success(users) {
-        return { type: GETALL_SUCCESS, users }
+        return { type: GETALL_SUCCESS, payload: users }
     }
 
     function failure(error) {
-        return { type: GETALL_FAILURE, error }
+        return { type: GETALL_FAILURE, payload: error }
     }
 }
 
@@ -143,15 +143,15 @@ function _delete(id) {
     };
 
     function request(id) {
-        return { type: DELETE_REQUEST, id }
+        return { type: DELETE_REQUEST, payload: id }
     }
 
     function success(id) {
-        return { type: DELETE_SUCCESS, id }
+        return { type: DELETE_SUCCESS, payload: id }
     }
 
     function failure(id, error) {
-        return { type: DELETE_FAILURE, id, error }
+        return { type: DELETE_FAILURE, payload: error }
     }
 }
 

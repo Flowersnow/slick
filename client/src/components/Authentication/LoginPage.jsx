@@ -15,7 +15,8 @@ class LoginPage extends Component {
             username: '',
             password: '',
             submitted: false,
-            adminStatus: false,
+            adminStatus: false, // flag if user is logging in as admin
+            isAdmin: false, // flag indicating whether or not user is actually an admin
         };
 
         this.handleChange = this.handleChange.bind( this );

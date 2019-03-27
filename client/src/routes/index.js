@@ -9,6 +9,7 @@ import { UserStats} from "../components/User/UserStats";
 import { alert, socketAction } from '../actions/index';
 import { history } from '../_helpers/index';
 import { RegisterPage } from "../components/Authentication/RegisterPage";
+import { AdminPage } from "../components/Authentication/AdminPage";
 import { user } from '../actions/userActions';
 import { LOGIN_SUCCESS } from "../actions/actionTypes";
 
@@ -36,7 +37,31 @@ class Routes extends Component {
             this.props.dispatch( successSocket( JSON.parse( user ) ) );
             this.props.dispatch( initializeSocket() );
             return <Route {...rest} render={props => ( <Component {...props}/> )}/>
+
         } else {
+            return <Route {...rest} render={props => (
+                <Redirect to={{ pathname: '/login', state: { from: props.location } }}/> )}/>
+        }
+    };
+
+    PrivateRouteAdmin = ({ component: Component, ...rest }) => {
+        const user = localStorage.getItem( 'user' );
+        console.log("In private route admin");
+        if (!user)   return <Route {...rest} render={props => (
+            <Redirect to={{ pathname: '/login', state: { from: props.location } }}/> )}/>
+
+        let userData = JSON.parse(user);
+        let isAdminStatus = userData.isAdmin;
+        if (isAdminStatus) {
+            console.log("user is in local and is admin");
+            return <div>
+                <link rel="stylesheet"
+            href="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+            <Route {...rest} render={props => ( <Component {...props}/> )}/>
+            </div>
+  //          return <Route {...rest} render={props => ( <Component {...props}/> )}/>
+        } else {
+            // user is in local storage but not an admin
             return <Route {...rest} render={props => (
                 <Redirect to={{ pathname: '/login', state: { from: props.location } }}/> )}/>
         }
@@ -44,7 +69,7 @@ class Routes extends Component {
 
     render() {
         const { alert } = this.props;
-        const { PrivateRoute } = this;
+        const { PrivateRoute, PrivateRouteAdmin } = this;
         return (
             <div className="jumbotron">
                 <div className="container">
@@ -55,6 +80,7 @@ class Routes extends Component {
                         <Router history={history}>
                             <Switch>
                                 <PrivateRoute path="/" exact component={MainApp}/>
+                                <PrivateRouteAdmin path="/admin" component={AdminPage}/>
                                 <div>
                                     <link rel="stylesheet"
                                           href="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>

@@ -10,6 +10,8 @@ module.exports = {
     authenticate,
     create,
     update,
+    getById,
+    getAll,
     delete: _delete
 };
 
@@ -32,6 +34,82 @@ async function performQuery(q) {
     return res;
 }
 
+async function getById(id) {
+    console.log("getting by id" + id);
+    const query = {
+        text: "select username, fullname from users where userid=($1)",
+        values: [id]
+    };
+    try {
+    const response = await performQuery(query);
+    if (!response || response.rowCount < 1) {
+        throw "Userid not found in DB";
+    }
+    let fullname, username;
+    fullname = response.rows[0].fullname;
+    username = response.rows[0].username;
+    console.log(fullname, username);
+    let {firstname, lastname} = getFirstandLastNames(fullname);
+    return {username: username, firstname: firstname, lastname: lastname};
+}
+catch(err) {
+    throw err;
+}
+}
+
+async function isAdmin(id) {
+    console.log("determining if admin")
+    const query = {
+        name: "is-admin",
+        text: 'SELECT userid from admin where userid=($1)',
+        values: [id]
+    };
+    try {
+    let res = await performQuery(query);
+    return (res && res.rowCount >= 1)? true : false;
+    }
+    catch(err) {
+        throw err;
+    }
+}
+
+async function getAll() {
+    console.log("Getting all users from db");
+    const query = {
+        text: "select userid, fullname, username from users",
+    };
+    try {
+    const response = await performQuery(query);
+    if (!response || response.rowCount < 1) {
+        throw "Unable to query users table";
+    }
+    let userHash = parseGetAllRes(response.rows);
+    return userHash;
+}
+catch(err) {
+    throw err;
+}
+}
+
+// gets all the userid, first/lastname, username and put in hash
+function parseGetAllRes(res) {
+    let userHash = {};
+    let userArr = [];
+    for (let i of res) {
+        let curUserHash = {};
+        let userID = i.userid;
+        let {firstname, lastname} = getFirstandLastNames(i.fullname);
+        let username = i.username;
+        curUserHash['id'] = userID;
+        curUserHash['firstName'] = firstname;
+        curUserHash['lastName'] = lastname;
+        curUserHash['username'] = username;
+        userArr.push(curUserHash);
+    }
+    userHash["users"] = userArr;
+    return userHash;
+}
+
 async function authenticate(input) {
     let username, password, adminstatus;
     if (input.hasOwnProperty("username") && input.hasOwnProperty("password") && input.hasOwnProperty("adminstatus")) {
@@ -50,6 +128,9 @@ async function authenticate(input) {
     };
     try {
         let result = await performQuery(query);
+        let authUserId = result.rows[0].userid;
+        let isUserAdmin  = await isAdmin(authUserId);
+        console.log("Is user admin? "+ isUserAdmin)
         if (!result || result.rowCount < 1) {
             if (adminstatus) {
                 throw "Username not found as admin";
@@ -77,7 +158,8 @@ async function authenticate(input) {
                         username: resUsername,
                         token: token,
                         firstName: firstname,
-                        lastname: lastname
+                        lastname: lastname,
+                        isAdmin: isUserAdmin,
                     };
                 } else {
                     let error2 = "Username or password is incorrect";
@@ -93,7 +175,6 @@ async function authenticate(input) {
         throw err;
     }
 }
-
 function getFirstandLastNames(fullname) {
     let res = fullname.split(" "); // split fullname where space occurs
     return {
@@ -278,15 +359,23 @@ async function update(username, userParam) {
     }
 }
 
-async function _delete(id) {
-    if (!username) {
-        throw "body does not contain correct parameters";
+// the userid is the param
+async function _delete(reqUserid, delId) {
+    console.log("Userid of delete request " + reqUserid);
+    console.log("Id to be deleted " + delId);
+    if (!delId || !reqUserid) {
+        throw "input does not contain correct parameters username and adminstatus";
     }
+    let adminstatus = await isAdmin(reqUserid);
+    if (!adminstatus) {
+        throw "User is not an admin, unable to delete another user";
+    }
+    console.log("Delete request made by an authorized admin " + reqUserid);
     try {
         const query = {
             name: "delete-user",
-            text: "delete from users where id=($1)",
-            values: [id]
+            text: "delete from users where userid=($1)",
+            values: [delId]
         };
         let res = await performQuery(query);
         if (res && res.rowCount >= 1) {

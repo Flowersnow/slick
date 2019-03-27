@@ -40,7 +40,7 @@ function logout() {
     // remove user from local storage to log user out
     localStorage.removeItem('user');
 }
-
+// get all the users
 function getAll() {
     const requestOptions = {
         method: 'GET',
@@ -49,7 +49,7 @@ function getAll() {
 
     return fetch(`${apiUrl}/users`, requestOptions).then(handleResponse);
 }
-
+// id is the userid
 function getById(id) {
     const requestOptions = {
         method: 'GET',
@@ -72,6 +72,7 @@ function register(user) {
     return fetch(`${apiUrl}/users/register`, requestOptions).then(handleResponse);
 }
 
+// NOT CORRECT: Do not use
 function update(user) {
     const requestOptions = {
         method: 'PUT',
@@ -86,13 +87,14 @@ function update(user) {
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
+// id is the userid of the user to be deleted
 function _delete(id) {
     const requestOptions = {
         method: 'DELETE',
         headers: authHeader()
     };
 
-    return fetch(`${apiUrl}/users/${id}`, requestOptions).then(handleResponse);
+    return fetch(`${apiUrl}/users/delete/${id}`, requestOptions).then(handleResponse);
 }
 
 function handleResponse(response) {
@@ -108,7 +110,6 @@ function handleResponse(response) {
             const error = (data && data.message) || response.statusText;
             return Promise.reject(error);
         }
-
         return data;
     });
 }
