@@ -58,7 +58,6 @@ catch(err) {
 }
 
 async function isAdmin(id) {
-    console.log("determining if admin")
     const query = {
         name: "is-admin",
         text: 'SELECT userid from admin where userid=($1)',
@@ -126,11 +125,12 @@ async function authenticate(input) {
         text: text,
         values: [username]
     };
+    const adminQuery = {
+        text: adminText,
+        values: [username]
+    }
     try {
         let result = await performQuery(query);
-        let authUserId = result.rows[0].userid;
-        let isUserAdmin  = await isAdmin(authUserId);
-        console.log("Is user admin? "+ isUserAdmin)
         if (!result || result.rowCount < 1) {
             if (adminstatus) {
                 throw "Username not found as admin";
@@ -138,6 +138,9 @@ async function authenticate(input) {
                 throw "Username not found";
             }
         } else {
+            let authUserId = result.rows[0].userid;
+            let isUserAdmin  = await isAdmin(authUserId);
+            console.log("Is user admin? "+ isUserAdmin)
             let resPassword = result.rows[0].password;
             let resId = result.rows[0].userid;
             let resFullname = result.rows[0].fullname;
