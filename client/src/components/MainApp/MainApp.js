@@ -6,6 +6,9 @@ import Header from './Header';
 import Messages from './Messages';
 import Input from './Input';
 import Layout from './Layout';
+import Thread from './Thread';
+import ThreadHeader from './ThreadHeader';
+import ThreadInput from './ThreadInput';
 
 class MainApp extends Component {
 
@@ -16,6 +19,9 @@ class MainApp extends Component {
                 <Header/>
                 <Messages/>
                 <Input/>
+                <Thread/>
+                <ThreadHeader/>
+                <ThreadInput/>
             </Layout>
         )
     }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Input as UiInput } from 'semantic-ui-react';
 import { connect } from 'react-redux';
-import { socketAction, messageSent } from "../../actions/index";
+import { socketAction, messageSent } from "../../actions";
 import { currentChannelSelector, currentUserSelector } from "../../selectors/index";
 
 const InputDiv = styled.div`
@@ -16,6 +16,7 @@ const mapStateToProps = state => ( {
     currentChannel: currentChannelSelector( state.channels, state.currentChannelId ),
     currentUser: currentUserSelector( state.users, state.currentUserId )
 } );
+
 const mapDispatchToProps = { messageSent: socketAction( messageSent ) };
 
 class Input extends Component {
@@ -44,9 +45,7 @@ class Input extends Component {
             onMessageChanged,
             onMessageKeypress,
             disabled,
-            state: {
-                message
-            }
+            state: { message }
         } = this;
 
         const {

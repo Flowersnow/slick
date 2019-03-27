@@ -6,13 +6,23 @@ async function saveMessage(db, payload) {
         text: 'INSERT INTO "content" VALUES($1, $2) ON CONFLICT DO NOTHING',
         values: [ message, message.length ],
     };
+    const values = [ `T${uuid()}`, timestamp, userId, channelId, message ];
     const messageQuery = {
         text: 'INSERT INTO messages VALUES($1, $2, NULL, $3, NULL, $4, $5)',
-        values: [ `T${uuid()}`, timestamp, userId, channelId, message ]
+        values
     };
     try {
         await db.query( contentQuery );
         await db.query( messageQuery );
+        return {
+            id: values[ 0 ],
+            timestamp,
+            pinnedby: null,
+            userId,
+            isreplytotextid: null,
+            channelId,
+            message
+        }
     }
     catch (err) {
         logError( err );
@@ -21,12 +31,13 @@ async function saveMessage(db, payload) {
 
 async function sendCurrentChannelMessages(db, currentChannelId) {
     const query = {
-        text: 'SELECT * FROM messages WHERE channelid = $1',
+        text: 'SELECT * FROM messages WHERE channelid = $1 AND isreplytotextid IS NULL',
         values: [ currentChannelId ]
     };
     try {
         const response = await db.query( query );
-        return response.rows.map( ({ sentat, pinnedby, userid, isreplytotextid, channelid, content }) => ( {
+        return response.rows.map( ({ id, sentat, pinnedby, userid, isreplytotextid, channelid, content }) => ( {
+                id,
                 timestamp: sentat,
                 pinnedby,
                 userId: userid,
@@ -94,7 +105,6 @@ async function getInitialInfo(db) {
 
 async function createNewChannel(db, { name, description, channelAdmin }) {
     const values = [ `C${uuid()}`, name, description, channelAdmin ];
-    console.log( values );
     const query = {
         text: 'INSERT INTO channel VALUES($1, $2, $3, $4)',
         values
@@ -107,9 +117,68 @@ async function createNewChannel(db, { name, description, channelAdmin }) {
     }
 }
 
+async function saveThreadMessage(db, { message, channelId, userId, isreplytotextid, timestamp }) {
+    const contentQuery = {
+        text: 'INSERT INTO "content" VALUES($1, $2) ON CONFLICT DO NOTHING',
+        values: [ message, message.length ],
+    };
+    const values = [ `T${uuid()}`, timestamp, userId, isreplytotextid, channelId, message ];
+    console.log(values);
+    const messageQuery = {
+        text: 'INSERT INTO messages VALUES($1, $2, NULL, $3, $4, $5, $6)',
+        values
+    };
+    try {
+        await db.query( contentQuery );
+        await db.query( messageQuery );
+        return {
+            id: values[ 0 ],
+            timestamp,
+            pinnedby: null,
+            isreplytotextid,
+            userId,
+            channelId,
+            message
+        }
+    }
+    catch (err) {
+        logError( err );
+    }
+}
+
+async function getThreadMessages(db, { messageId, channelId }) {
+    const query = {
+        text: 'SELECT * FROM MESSAGES WHERE isreplytotextid = $1 AND channelid = $2',
+        values: [ messageId, channelId ]
+    };
+    try {
+        const threads = await db.query( query );
+        return threads.rows.map( ({ id, sentat, pinnedby, userid, isreplytotextid, channelid, content }) => ( {
+            id,
+            timestamp: sentat,
+            pinnedby,
+            userId: userid,
+            isreplytotextid,
+            channelId: channelid,
+            message: content
+        } ) );
+    } catch (err) {
+        logError( err );
+    }
+}
+
+
 function logError(err) {
     console.log( 'Error while querying database!' );
     console.log( err );
 }
 
-module.exports = { saveMessage, sendCurrentChannelMessages, getUserInfo, getInitialInfo, createNewChannel };
+module.exports = {
+    saveMessage,
+    sendCurrentChannelMessages,
+    getUserInfo,
+    getInitialInfo,
+    createNewChannel,
+    saveThreadMessage,
+    getThreadMessages
+};

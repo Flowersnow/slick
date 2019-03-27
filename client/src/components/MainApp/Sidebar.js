@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { channelChanged, socketAction, channelCreated, user } from "../../actions";
+import { channelChanged, socketAction, channelCreated, user, clearThread } from "../../actions";
 import { currentChannelSelector, currentUserSelector } from "../../selectors";
 import { Button, Modal, Form } from 'semantic-ui-react';
 
@@ -64,7 +64,8 @@ const mapStateToProps = state => ( {
 const mapDispatchToProps = {
     channelChanged: socketAction( channelChanged ),
     channelCreated: socketAction( channelCreated ),
-    changeViewingUser: user.changeViewingUser
+    changeViewingUser: user.changeViewingUser,
+    clearThread
 };
 
 const Bubble = ({ on }) => ( on ? <GreenCircle/> : '○' );
@@ -77,33 +78,34 @@ export class Sidebar extends Component {
     };
 
     onChangeChannel = (newChannelId) => () => {
+        this.props.clearThread();
         this.props.channelChanged( newChannelId );
     };
 
     goToUserProfile = (user) => () => {
-        this.props.changeViewingUser(user);
+        this.props.changeViewingUser( user );
     };
 
     renderChannels = ({ id, name }) => <SidebarListItem onClick={this.onChangeChannel( id )}
                                                         key={`channel-${id}`}># {name}</SidebarListItem>;
 
     renderUsers = (user) => (
-        <SidebarListItem key={`user-${user.id}`} onClick={this.goToUserProfile(user)}>
+        <SidebarListItem key={`user-${user.id}`} onClick={this.goToUserProfile( user )}>
             <Bubble on={user.isOnline}/> {user.name}
         </SidebarListItem>
     );
 
     hidden = { visibility: 'hidden' };
 
-    handleOpen = () => this.setState({ modalOpen: true });
+    handleOpen = () => this.setState( { modalOpen: true } );
 
     handleClose = () => {
         this.createChannel();
-        this.setState({ modalOpen: false });
+        this.setState( { modalOpen: false } );
     };
 
     renderButton = ({ isAdmin }) => ( isAdmin
-        ? <Button icon='plus' size='mini' circular='true' onClick={this.handleOpen}/>
+        ? <Button icon='plus' size='mini' circular onClick={this.handleOpen}/>
         : <Button style={this.hidden}/> );
 
     createChannel = () => {

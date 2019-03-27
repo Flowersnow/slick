@@ -15,6 +15,7 @@ const mapStateToProps = state => (
 );
 
 export class Header extends Component {
+
     render() {
         const {
             props: { currentChannel }
@@ -22,7 +23,9 @@ export class Header extends Component {
 
         return (
         <HeaderDiv>
-            <UiHeader as='h2'>#{currentChannel.name}</UiHeader>
+            <UiHeader as='h2' dividing style={{ height: '100%' }}>#{currentChannel.name}
+                <UiHeader.Subheader>{currentChannel.description}</UiHeader.Subheader>
+            </UiHeader>
         </HeaderDiv>
         );
     }

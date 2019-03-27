@@ -23,3 +23,7 @@ export const viewingUserSelector = (users, viewingUserId) => {
 export const messagesForChannelSelector = (messages, currentChannelId) => (
     filter( messages, ({ channelId }) => channelId === currentChannelId )
 );
+
+export const currentThreadSelector = (messages, currentThreadId) => (
+  find(messages, ({ id }) => id === currentThreadId)
+);

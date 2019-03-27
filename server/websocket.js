@@ -10,14 +10,20 @@ const {
     USER_ENTERS,
     INITIALIZE,
     INITIALIZE_USERS,
-    INITIALIZE_CHANNELS
+    INITIALIZE_CHANNELS,
+    THREAD_MESSAGE_SENT,
+    THREAD_MESSAGE_RECEIVED,
+    THREAD_MESSAGES_RECEIVED,
+    CHANGE_THREAD
 } = require( '../client/src/actions/actionTypes' );
 const {
     saveMessage,
     sendCurrentChannelMessages,
     getUserInfo,
     getInitialInfo,
-    createNewChannel
+    createNewChannel,
+    saveThreadMessage,
+    getThreadMessages
 } = require( './queries/messages' );
 
 let currentChannelId;
@@ -30,6 +36,8 @@ function handleIo(io, db) {
         socket.on( LOGIN_SUCCESS, onLoginSuccess( socket, db ) );
         socket.on( INITIALIZE, initialize( socket, db ) );
         socket.on( CREATE_CHANNEL, createChannel( socket, db ) );
+        socket.on( THREAD_MESSAGE_SENT, onThreadSent( socket, db ) );
+        socket.on( CHANGE_THREAD, onThreadChanged( socket, db ) );
         socket.on( 'disconnect', (reason) => {
             console.log( 'disconnecting!', reason );
         } );
@@ -38,7 +46,7 @@ function handleIo(io, db) {
 
 const onChannelChange = (socket, db) => async ({ newChannelId }) => {
     if (currentChannelId != null) {
-        socket.leave( newChannelId, err => {
+        socket.leave( currentChannelId, err => {
             if (err) {
                 console.log( 'Error leaving:' );
                 console.log( err );
@@ -71,9 +79,11 @@ const onMessage = (socket, db) => ({ userId, message, channelId, timestamp }) =>
     if (channelId !== currentChannelId) {
         payload.message = `Error, current channelId, ${channelId}, did not match currentChannelId, ${currentChannelId}, on server`
     }
-    saveMessage( db, payload );
-
-    socket.to( currentChannelId ).emit( SOCKET_MESSAGE, { type: MESSAGE_RECEIVED, payload } );
+    saveMessage( db, payload )
+        .then( message => socket.to( currentChannelId ).emit( SOCKET_MESSAGE, {
+            type: MESSAGE_RECEIVED,
+            payload: message
+        } ) );
 };
 
 const onLoginSuccess = (socket, db) => ({ username }) => {
@@ -94,6 +104,17 @@ const initialize = (socket, db) => () => {
 const createChannel = (socket, db) => (channelInfo) => {
     createNewChannel( db, channelInfo )
         .then( newChannel => socket.emit( SOCKET_MESSAGE, { type: NEW_CHANNEL, payload: newChannel } ) );
+};
+
+const onThreadSent = (socket, db) => (threadInfo) => {
+
+    saveThreadMessage( db, threadInfo ).then(
+        thread => socket.emit( SOCKET_MESSAGE, { type: THREAD_MESSAGE_RECEIVED, payload: thread } ) );
+};
+
+const onThreadChanged = (socket, db) => ({ messageId, channelId }) => {
+    getThreadMessages( db, { messageId, channelId } )
+        .then( threads => socket.emit( SOCKET_MESSAGE, { type: THREAD_MESSAGES_RECEIVED, payload: threads } ) )
 };
 
 module.exports = handleIo;
