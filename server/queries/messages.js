@@ -265,7 +265,7 @@ module.exports = {
     createNewChannel,
     saveThreadMessage,
     getThreadMessages,
-    updateChannel
+    updateChannel,
     getThreadMessages,
     getUserStatistics,
 };
