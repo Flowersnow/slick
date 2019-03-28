@@ -13,12 +13,14 @@ export const currentUserSelector = (users, currentUserId) => (
 );
 
 export const viewingUserSelector = (users, viewingUserId) => {
-    console.log('users = ', users);
-    console.log('viewingId = ', viewingUserId);
     return (
     find( users, ({ id }) => id === viewingUserId ) || defaultUser
 )};
 
+export const viewingUserStatsSelector = (users, viewingUserId) => {
+    return (
+        find( users, ({ id }) => id === viewingUserId ) || defaultUser
+)};
 
 export const messagesForChannelSelector = (messages, currentChannelId) => (
     filter( messages, ({ channelId }) => channelId === currentChannelId )

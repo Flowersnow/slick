@@ -1,8 +1,4 @@
-export {
-    usersReducer as users,
-    currentUserIdReducer as currentUserId,
-    viewingUserIdReducer as viewingUserId
-}from './users';
+export { usersReducer as users, currentUserIdReducer as currentUserId, viewingUserIdReducer as viewingUserId, viewingUserStatsReducer as viewingUserStats} from './users';
 export { messagesReducer as messages } from './messages';
 export { threadReducer as threads, currentThreadIdReducer as currentThreadId } from './thread';
 export * from './socket';

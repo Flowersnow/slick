@@ -10,6 +10,8 @@ import {
     DELETE_FAILURE,
     INITIALIZE_USERS,
     CHANGE_VIEWING_USER,
+    GET_VIEWING_USER_STATS,
+    SENT_VIEWING_USER_STATS,
 } from '../actions/actionTypes.js';
 import filter from 'lodash/filter';
 
@@ -83,6 +85,16 @@ export const viewingUserIdReducer = (state = 'U01', { type, payload }) => {
     switch (type) {
         case CHANGE_VIEWING_USER: {
             return payload.id;
+        }
+        default:
+            return state;
+    }
+};
+
+export const viewingUserStatsReducer = (state = {}, { type, payload }) => {
+    switch (type) {
+        case SENT_VIEWING_USER_STATS: {
+            return payload;
         }
         default:
             return state;
