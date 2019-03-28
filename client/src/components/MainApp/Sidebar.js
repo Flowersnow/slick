@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { channelChanged, socketAction, channelCreated, user, clearThread } from "../../actions";
 import { currentChannelSelector, currentUserSelector } from "../../selectors";
 import { Button, Modal, Form } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 
 const SidebarDiv = styled.div`
   grid-column: 1;
@@ -130,6 +131,11 @@ export class Sidebar extends Component {
         ? <Button icon='plus' size='mini' circular onClick={this.handleOpen}/>
         : <Button style={this.hidden}/> );
 
+    linkToAdminButton = ({isAdmin}) => (isAdmin
+            ? <Link to="/admin" target="_blank">Go to Admin Panel</Link>
+            : <Button style={this.hidden}/>
+    );
+
     createChannel = () => {
         const { newChannelName, newChannelDescription } = this.state;
         const { currentUser } = this.props;
@@ -155,6 +161,7 @@ export class Sidebar extends Component {
             onFormUpdate,
             handleClose,
             logout,
+            linkToAdminButton,
             props: { users, currentUser, channels },
             state: { newChannelName, newChannelDescription, modalOpen }
         } = this;
@@ -167,6 +174,7 @@ export class Sidebar extends Component {
                         <Button icon='log out' size='mini' circular onClick={logout} />
                     </SlickHeaderRight>
                     <Username>{currentUser.name}</Username>
+                    {linkToAdminButton(currentUser)}
                 </SidebarHeader>
                 <div>
                     <SidebarList>
