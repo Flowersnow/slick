@@ -135,7 +135,7 @@ async function authenticate(input) {
             if (adminstatus) {
                 throw "Username not found as admin";
             } else {
-                throw "Username not found";
+                throw "Username or password incorrect";
             }
         } else {
             let authUserId = result.rows[0].userid;
