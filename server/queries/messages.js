@@ -194,12 +194,15 @@ async function getUserStatistics(db, viewingUserId) {
             "' AND m.content = c.content"
     };
 
-    const usersInAllChannelsQuery = {
-      text: 'SELECT channelusers.userid FROM channelusers ' +
-          'WHERE userid NOT in ( SELECT userid FROM ( ' +
-          '(SELECT userid, channelid FROM (SELECT channelid FROM channel) AS p CROSS JOIN (SELECT DISTINCT userid FROM channelusers) AS sp) ' +
+    const usersMessagedAllChannelsQuery = {
+      text: 'SELECT u.fullname ' +
+          'FROM users u ' +
+          'WHERE NOT EXISTS ' +
+          '((SELECT c.channelid FROM channel c) ' +
           'EXCEPT ' +
-          '(SELECT userid, channelid FROM channelusers) ) AS r);'
+          '(SELECT m.channelid ' +
+          'FROM messages m ' +
+          'WHERE m.userid = u.userid));',
     };
 
     try {
@@ -208,7 +211,7 @@ async function getUserStatistics(db, viewingUserId) {
         const numChannelsResponse = await db.query( numChannelsQuery );
         const numAdminChannelsResponse = await db.query( numAdminChannelsQuery );
         const avgLengthOfMessagesSentResponse = await db.query( avgLengthOfMessagesSentQuery );
-        const usersInAllChannelsResponse = await db.query( usersInAllChannelsQuery );
+        const usersMessagedAllChannelsResponse = await db.query( usersMessagedAllChannelsQuery );
 
         return {
             mostactivechannel: mostActiveChannelResponse.rows.length === 0 ? 'None found' : mostActiveChannelResponse.rows[0]["channelname"],
@@ -216,7 +219,7 @@ async function getUserStatistics(db, viewingUserId) {
             numAdminChannels: numAdminChannelsResponse.rows[0]["count"],
             sentMessages: numSentMessagesResponse.rows[0]["count"],
             avgLengthMessagesSent: avgLengthOfMessagesSentResponse.rows[0]["avg"] === null ? 0 : parseFloat(avgLengthOfMessagesSentResponse.rows[0]["avg"]).toFixed(2),
-            usersInAllChannels: usersInAllChannelsResponse ? 'None found' : Object.values(usersInAllChannelsResponse.rows),
+            usersMessagedAllChannels: usersMessagedAllChannelsResponse.rows.length === 0 ? 'None found' : (Object.values(usersMessagedAllChannelsResponse.rows.map(person => person["fullname"]))).join(", "),
         }
 
     } catch (err) {

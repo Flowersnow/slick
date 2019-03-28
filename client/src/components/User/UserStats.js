@@ -32,6 +32,10 @@ const StatsComponent = styled.div`
     padding: 10px;
 `;
 
+const MetadataFieldDescriptor = styled.span`
+    color: #A9A9A9;
+`;
+
 const mapStateToProps = ({users, viewingUserId, viewingUserStats}) => {
         return ({
             viewingUser: viewingUserStatsSelector(users, viewingUserId),
@@ -44,17 +48,18 @@ class UserStats extends React.Component {
     render() {
 
         const {
-            userStatistics: {
-                mostactivechannel,
-                numChannels,
-                numAdminChannels,
-                sentMessages,
-                avgLengthMessagesSent,
-                usersInAllChannels
+            props: {
+                userStatistics: {
+                    mostactivechannel,
+                    numChannels,
+                    numAdminChannels,
+                    sentMessages,
+                    avgLengthMessagesSent,
+                    usersMessagedAllChannels
+                },
+                viewingUser
             },
-            viewingUser
-        } = this.props;
-
+        } = this;
 
         return (
             <Wrapper>
@@ -94,20 +99,19 @@ class UserStats extends React.Component {
                     <Link to={"/"}>Return to messages</Link>
                 </div>
                 <br></br>
+                    <img src="https://cdn3.iconfinder.com/data/icons/stars-5/512/gold_star-512.png" height="24" width="24"/>
 
+                    <MetadataFieldDescriptor>
                 <FormattedFieldDisplay {... {
                         value: "",
-                        message_prefix: "EXTRA STATS:",
+                        message_prefix: "Slick Superstars (people who've messaged all the channels!):",
                         message_suffix: ""
                     }}>
                 </FormattedFieldDisplay>
-
-                <FormattedFieldDisplay {... {
-                   value: this.props.userStatistics.usersInAllChannels,
-                   message_prefix: "Users that belong in all channels:",
-                   message_suffix: ""
-                }}>
-                </FormattedFieldDisplay>
+                    </MetadataFieldDescriptor>
+                    <MetadataField>
+                    {this.props.userStatistics.usersMessagedAllChannels}
+                    </MetadataField>
                 </UserStatsDiv>
             </Wrapper>
         );
