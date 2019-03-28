@@ -1,7 +1,8 @@
 import React from 'react';
-import connect from "react-redux/es/connect/connect";
+import { connect } from "react-redux";
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { viewingUserStatsSelector } from '../../selectors';
 
 const UserStatsDiv = styled.div`
   display: flex;
@@ -20,10 +21,8 @@ const DisplayName = styled.h1`
   font-size: 2.5vw;
 `;
 
-const MetadataField = styled.span`
-  display: flex;
-  justify-content: space-between;
-  font-size: 2.8vw;
+const MetadataField = styled.div`
+  font-size: 1.8vw;
 `;
 
 const StatsComponent = styled.div`
@@ -33,64 +32,52 @@ const StatsComponent = styled.div`
     padding: 10px;
 `;
 
-const mapStateToProps = ({users, socket: { connected } }) => ( {
+const mapStateToProps = ({users, viewingUserId, viewingUserStats}) => {
+        return ({
+            viewingUser: viewingUserStatsSelector(users, viewingUserId),
+            userStatistics: viewingUserStats
+        })
+};
 
-} );
-
-export class UserStats extends React.Component {
-
-    constructor(props) {
-        super(props);
-    };
+class UserStats extends React.Component {
 
     render() {
+
+        const {
+            userStatistics: {
+                mostactivechannel,
+                numChannels,
+                numAdminChannels,
+                sentMessages,
+                avgLengthMessagesSent,
+                usersInAllChannels
+            },
+            viewingUser
+        } = this.props;
+
 
         return (
             <Wrapper>
                 <UserStatsDiv>
                     <StatsComponent>
                 <DisplayName>
-                    <NameHeader {...{fname:"Jon", lname:"Snow"}}></NameHeader>
+                    <div>{viewingUser.name}'s Usage Stats</div>
                 </DisplayName>
-                <FormattedFieldDisplay {...{
-                    value: '2019-01-27',
-                    message_prefix: "Joined:",
-                    message_suffix:""}}>
-                </FormattedFieldDisplay> <span></span>
-                <FormattedFieldDisplay {... {
-                    value: "#yvr-foodie",
-                    message_prefix: "Most active in this channel: ",
-                    message_suffix: ""
-                }}>
-                </FormattedFieldDisplay>
-                <FormattedFieldDisplay {...{
-                value:3,
-                message_prefix: "Currently a member of ",
-                message_suffix: " channels"}}>
-                </FormattedFieldDisplay>
-                <FormattedFieldDisplay {...{
-                    value: 2,
-                    message_prefix: "Currently an admin of ",
-                    message_suffix: " channels"}}>
-                </FormattedFieldDisplay>
-                <FormattedFieldDisplay {...{
-                    value: 1024,
-                    message_prefix: "Sent ",
-                    message_suffix: " messages"
-                }}>
-                </FormattedFieldDisplay>
-                <FormattedFieldDisplay {...{
-                    value: 35,
-                    message_prefix: "Avg. number of messages sent today: ",
-                    message_suffix: ""
-                }}>
-                </FormattedFieldDisplay>
-                <FormattedFieldDisplay {...{
-                    value: 47,
-                    message_prefix: "Avg. length of messages sent: ",
-                    message_suffix: ""
-                }}>
-                </FormattedFieldDisplay>
+                <MetadataField>
+                    Most active in this channel: {this.props.userStatistics.mostactivechannel}
+                </MetadataField>
+                <MetadataField>
+                    Currently a member of {this.props.userStatistics.numChannels} channels
+                </MetadataField>
+                <MetadataField>
+                    Currently an admin of {this.props.userStatistics.numAdminChannels} channels
+                </MetadataField>
+                <MetadataField>
+                    Sent {this.props.userStatistics.sentMessages} messages
+                </MetadataField>
+                <MetadataField>
+                    Avg. length of messages sent: {this.props.userStatistics.avgLengthMessagesSent}
+                </MetadataField>
                     </StatsComponent>
 
                 <div>
@@ -106,15 +93,27 @@ export class UserStats extends React.Component {
                     <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                     <Link to={"/"}>Return to messages</Link>
                 </div>
+                <br></br>
+
+                <FormattedFieldDisplay {... {
+                        value: "",
+                        message_prefix: "EXTRA STATS:",
+                        message_suffix: ""
+                    }}>
+                </FormattedFieldDisplay>
+
+                <FormattedFieldDisplay {... {
+                   value: this.props.userStatistics.usersInAllChannels,
+                   message_prefix: "Users that belong in all channels:",
+                   message_suffix: ""
+                }}>
+                </FormattedFieldDisplay>
                 </UserStatsDiv>
             </Wrapper>
         );
     }
 }
 
-const NameHeader = ({fname, lname}) => (
-    <div>{fname} {lname}'s Usage Stats</div>
-);
 
 const FormattedFieldDisplay = ({value, message_prefix, message_suffix}) => (
     <MetadataField>
@@ -124,4 +123,5 @@ const FormattedFieldDisplay = ({value, message_prefix, message_suffix}) => (
 
 
 
-connect( mapStateToProps )( UserStats );
+const userStatsConnected = connect( mapStateToProps )( UserStats );
+export { userStatsConnected as UserStats };

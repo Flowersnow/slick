@@ -13,7 +13,8 @@ import {
     DELETE_SUCCESS,
     DELETE_FAILURE,
     INITIALIZE,
-    CHANGE_VIEWING_USER
+    CHANGE_VIEWING_USER,
+    GET_VIEWING_USER_STATS,
 } from './actionTypes';
 import { userService } from '../_services';
 import { alert } from './alert';
@@ -29,6 +30,7 @@ export const user = {
     initialize,
     success,
     changeViewingUser,
+    getUserStatistics,
 };
 
 function login(username, password, adminstatus) {
@@ -159,4 +161,9 @@ function _delete(id) {
 function changeViewingUser(id) {
     history.push('/user');
     return { type: CHANGE_VIEWING_USER, payload: id }
+}
+
+function getUserStatistics(id) {
+    history.push('/byuserstats');
+    return { type:  GET_VIEWING_USER_STATS, payload: id }
 }

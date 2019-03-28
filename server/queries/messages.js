@@ -166,6 +166,64 @@ async function getThreadMessages(db, { messageId, channelId }) {
     }
 }
 
+async function getUserStatistics(db, viewingUserId) {
+
+    const numSentMessagesQuery = {
+        text: "SELECT COUNT(*) FROM messages WHERE userid = '" + viewingUserId + "';"
+    };
+
+    const mostActiveChannelQuery = {
+        text: "SELECT c.channelname FROM messages m, channel c " +
+              "WHERE m.userid = '" + viewingUserId + "' AND m.channelid = c.channelid " +
+              "GROUP BY c.channelname " +
+              "HAVING COUNT(*) >= ALL (SELECT COUNT(*) " +
+              "FROM messages m " +
+              "WHERE m.userid = '" + viewingUserId + "' GROUP BY m.channelid);"
+    };
+
+    const numChannelsQuery = {
+        text: "SELECT COUNT (DISTINCT channelid) FROM channelusers WHERE userid = '" + viewingUserId + "';"
+    };
+
+    const numAdminChannelsQuery = {
+        text: "SELECT COUNT(*) FROM admin WHERE userid = '" + viewingUserId + "';"
+    };
+
+    const avgLengthOfMessagesSentQuery = {
+        text: "SELECT AVG(c.length) FROM messages m, content c WHERE m.userid = '" + viewingUserId +
+            "' AND m.content = c.content"
+    };
+
+    const usersInAllChannelsQuery = {
+      text: 'SELECT channelusers.userid FROM channelusers ' +
+          'WHERE userid NOT in ( SELECT userid FROM ( ' +
+          '(SELECT userid, channelid FROM (SELECT channelid FROM channel) AS p CROSS JOIN (SELECT DISTINCT userid FROM channelusers) AS sp) ' +
+          'EXCEPT ' +
+          '(SELECT userid, channelid FROM channelusers) ) AS r);'
+    };
+
+    try {
+        const numSentMessagesResponse = await db.query( numSentMessagesQuery );
+        const mostActiveChannelResponse = await db.query( mostActiveChannelQuery );
+        const numChannelsResponse = await db.query( numChannelsQuery );
+        const numAdminChannelsResponse = await db.query( numAdminChannelsQuery );
+        const avgLengthOfMessagesSentResponse = await db.query( avgLengthOfMessagesSentQuery );
+        const usersInAllChannelsResponse = await db.query( usersInAllChannelsQuery );
+
+        return {
+            mostactivechannel: mostActiveChannelResponse.rows.length === 0 ? 'None found' : mostActiveChannelResponse.rows[0]["channelname"],
+            numChannels: numChannelsResponse.rows[0]["count"],
+            numAdminChannels: numAdminChannelsResponse.rows[0]["count"],
+            sentMessages: numSentMessagesResponse.rows[0]["count"],
+            avgLengthMessagesSent: avgLengthOfMessagesSentResponse.rows[0]["avg"] === null ? 0 : parseFloat(avgLengthOfMessagesSentResponse.rows[0]["avg"]).toFixed(2),
+            usersInAllChannels: usersInAllChannelsResponse ? 'None found' : Object.values(usersInAllChannelsResponse.rows),
+        }
+
+    } catch (err) {
+        logError( err );
+    }
+}
+
 async function updateChannel(db, { channelId, channelDescription }) {
     const updateQuery = {
         text: 'UPDATE channel\n' +
@@ -208,4 +266,6 @@ module.exports = {
     saveThreadMessage,
     getThreadMessages,
     updateChannel
+    getThreadMessages,
+    getUserStatistics,
 };
