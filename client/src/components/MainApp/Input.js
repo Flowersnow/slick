@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Input as UiInput } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { socketAction, messageSent } from "../../actions";
-import { currentChannelSelector, currentUserSelector } from "../../selectors/index";
+import { currentChannelSelector, currentUserSelector } from "../../selectors";
 
 const InputDiv = styled.div`
   grid-column: 2;
@@ -33,7 +33,7 @@ class Input extends Component {
             return;
         }
         this.props.messageSent( this.state.message, this.props.currentUser.id, this.props.currentChannel.id );
-        this.setState( { message: "" } );
+        this.setState( { message: '' } );
     };
 
     get disabled() {

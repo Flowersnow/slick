@@ -14,7 +14,9 @@ const {
     THREAD_MESSAGE_SENT,
     THREAD_MESSAGE_RECEIVED,
     THREAD_MESSAGES_RECEIVED,
-    CHANGE_THREAD
+    CHANGE_THREAD,
+    UPDATE_CHANNEL_DESCRIPTION_SENT,
+    EDIT_CHANNEL
 } = require( '../client/src/actions/actionTypes' );
 const {
     saveMessage,
@@ -23,7 +25,8 @@ const {
     getInitialInfo,
     createNewChannel,
     saveThreadMessage,
-    getThreadMessages
+    getThreadMessages,
+    updateChannel
 } = require( './queries/messages' );
 
 let currentChannelId;
@@ -38,6 +41,7 @@ function handleIo(io, db) {
         socket.on( CREATE_CHANNEL, createChannel( socket, db ) );
         socket.on( THREAD_MESSAGE_SENT, onThreadSent( socket, db ) );
         socket.on( CHANGE_THREAD, onThreadChanged( socket, db ) );
+        socket.on( UPDATE_CHANNEL_DESCRIPTION_SENT, onUpdateChannelDescription( socket, db ) );
         socket.on( 'disconnect', (reason) => {
             console.log( 'disconnecting!', reason );
         } );
@@ -115,6 +119,11 @@ const onThreadSent = (socket, db) => (threadInfo) => {
 const onThreadChanged = (socket, db) => ({ messageId, channelId }) => {
     getThreadMessages( db, { messageId, channelId } )
         .then( threads => socket.emit( SOCKET_MESSAGE, { type: THREAD_MESSAGES_RECEIVED, payload: threads } ) )
+};
+
+const onUpdateChannelDescription = (socket, db) => ({ channelId, channelDescription }) => {
+  updateChannel(db, { channelId, channelDescription })
+      .then( channel => socket.emit( SOCKET_MESSAGE, { type: EDIT_CHANNEL, payload: channel } ) );
 };
 
 module.exports = handleIo;

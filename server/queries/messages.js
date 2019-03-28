@@ -166,6 +166,33 @@ async function getThreadMessages(db, { messageId, channelId }) {
     }
 }
 
+async function updateChannel(db, { channelId, channelDescription }) {
+    const updateQuery = {
+        text: 'UPDATE channel\n' +
+            'SET description = $1\n' +
+            'WHERE channelid = $2',
+        values: [ channelDescription, channelId ]
+    };
+    const selectQuery = {
+        text: 'SELECT * from channel where channelid = $1',
+        values: [ channelId ]
+    };
+    try {
+        await db.query( updateQuery );
+        const channel = await db.query( selectQuery );
+        return channel.rows.map( ({ channelid, channelname, description, ismanagedbyadminid }) => (
+            {
+                id: channelid,
+                name: channelname,
+                description,
+                channelAdmin: ismanagedbyadminid
+            }
+        ) )[ 0 ];
+    } catch (err) {
+        logError( err );
+    }
+}
+
 
 function logError(err) {
     console.log( 'Error while querying database!' );
@@ -179,5 +206,6 @@ module.exports = {
     getInitialInfo,
     createNewChannel,
     saveThreadMessage,
-    getThreadMessages
+    getThreadMessages,
+    updateChannel
 };
