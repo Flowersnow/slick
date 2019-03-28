@@ -2,14 +2,13 @@ import React from 'react';
 import { connect } from "react-redux";
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { Icon } from 'semantic-ui-react';
 import { viewingUserSelector } from '../../selectors';
+import {socketAction, user} from "../../actions";
 
 const UserComponentDiv = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
   align-content: stretch;
 `;
 
@@ -43,30 +42,34 @@ const DisplayName = styled.h1`
 `;
 
 const mapStateToProps = ({users, viewingUserId}) => {
-    console.log('users = ', users);
-    console.log('viewingId = ', viewingUserId);
     return ( {
     userInfo: viewingUserSelector(users, viewingUserId)
 } )};
 
+const mapDispatchToProps = {
+    getUserStatistics: socketAction( user.getUserStatistics ),
+};
+
 export class UserProfile extends React.Component {
+
+    goToUserStats() {
+        this.props.getUserStatistics(this.props.userInfo.id);
+    }
 
     render() {
 
         const {
-            userInfo
-        } = this.props;
-
-        console.log('user info = ', userInfo);
+            props: { userInfo },
+            goToUserStats,
+        } = this;
 
         return (
             <Wrapper>
             <UserComponentDiv>
                 <UserMetadata {...userInfo} />
                 <div>
-                    <img src="https://cdn1.iconfinder.com/data/icons/charts-and-diagrams-1-1/512/barchart-512.png" height="24" width="24"/>
-                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <Link to={"/byuserstats"}>See User Statistics</Link>
+                    <img onClick={goToUserStats.bind(this)} src="https://cdn1.iconfinder.com/data/icons/charts-and-diagrams-1-1/512/barchart-512.png" height="24" width="24"/>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click the icon to view {userInfo.name}'s usage stats!
                 </div>
                 <br></br>
                 <div>
@@ -74,6 +77,7 @@ export class UserProfile extends React.Component {
                     <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                     <Link to={"/"}>Return to messages</Link>
                 </div>
+                <br></br>
             </UserComponentDiv>
             </Wrapper>
         );
@@ -96,7 +100,7 @@ const UserMetadata = ({name, description, isOnline, username}) => (
         <MetadataField>
             <MetadataFieldDescriptor>Status</MetadataFieldDescriptor>
             <span>&nbsp;</span>
-            <span>{isOnline} </span>
+            <span>{isOnline ? "Active" : "Away"} </span>
         </MetadataField>
 
         <MetadataField>
@@ -108,4 +112,4 @@ const UserMetadata = ({name, description, isOnline, username}) => (
 );
 
 
-export default connect( mapStateToProps )( UserProfile );
+export default connect( mapStateToProps, mapDispatchToProps )( UserProfile );

@@ -5,11 +5,11 @@ const userService = require('./user.service');
 // routes
 router.post('/authenticate', authenticate);
 router.post('/register', register);
-//router.get('/', getAll);
+router.get('/', getAll);
 //router.get('/current', getCurrent);
-//router.get('/:id', getById);
+router.get('/:id', getById);
 router.put('/:username', update);
-router.delete('/:username', _delete);
+router.delete('/delete/:id', _delete);
 
 module.exports = router;
 
@@ -22,6 +22,7 @@ function authenticate(req, res, next) {
 }
 
 function register(req, res, next) {
+    console.log("register endpoint")
     userService.create(req.body)
         .then(() => res.status(200).json({
             message: "Successfully added new user"
@@ -29,7 +30,9 @@ function register(req, res, next) {
         .catch(err => next(err));
 }
 
+
 function getAll(req, res, next) {
+    console.log("getting ALL endpoint")
     userService.getAll()
         .then(users => res.json(users))
         .catch(err => next(err));
@@ -42,11 +45,13 @@ function getCurrent(req, res, next) {
 }
 
 function getById(req, res, next) {
+    console.log("getting by ID endpoint")
     userService.getById(req.params.id)
         .then(user => user ? res.json(user) : res.sendStatus(404))
         .catch(err => next(err));
 }
 
+// DO NOT USE: Not correct
 function update(req, res, next) {
     userService.update(req.params.username, req.body)
         .then(() => res.status(200).json({
@@ -56,9 +61,12 @@ function update(req, res, next) {
 }
 
 function _delete(req, res, next) {
-    userService.delete(req.params.username)
+    console.log("deleting a user")
+    console.log(req.user);
+    const reqUserId = req.user.sub; // the userid of the user sending the delete request (based on JWT)
+    userService.delete(reqUserId, req.params.id)
         .then(() => res.status(200).json({
-            message: "User " + req.params.username + " successfully deleted."
+            message: "User " + req.params.id + " successfully deleted."
         }))
         .catch(err => next(err));
 }

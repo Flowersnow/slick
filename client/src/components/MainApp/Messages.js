@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Comment } from 'semantic-ui-react';
 import find from 'lodash/find';
 import { messagesForChannelSelector } from "../../selectors/index";
+import { changedThread, socketAction } from "../../actions";
 
 const MessagesDiv = styled.div`
   grid-column: 2;
@@ -24,16 +25,21 @@ const StyledContent = styled( Comment.Content )`
 const mapStateToProps = (state) => (
     {
         users: state.users,
-        messagesForChannel: messagesForChannelSelector( state.messages, state.currentChannelId )
+        messagesForChannel: messagesForChannelSelector( state.messages, state.currentChannelId ),
+        currentChannelId: state.currentChannelId
     }
 );
+
+const mapDispatchToProps = { changedThread: socketAction( changedThread ) };
 
 export class Messages extends Component {
 
     getUserFromId = (userId) => ( find( this.props.users, user => user.id === userId ) || { name: "Unknown" } ).name;
 
-    renderComments = ({ userId, message, timestamp }) => (
-        <Comment key={timestamp}>
+    logReply = (id) => () => ( this.props.changedThread( id, this.props.currentChannelId ) );
+
+    renderComments = ({ userId, message, timestamp, id }) => (
+        <Comment key={id}>
             <StyledContent>
                 <Comment.Author as='a'>{this.getUserFromId( userId )}</Comment.Author>
                 <Comment.Metadata>
@@ -41,7 +47,7 @@ export class Messages extends Component {
                 </Comment.Metadata>
                 <Comment.Text>{message}</Comment.Text>
                 <Comment.Actions>
-                    <Comment.Action>Reply</Comment.Action>
+                    <Comment.Action onClick={this.logReply( id )}>Reply</Comment.Action>
                 </Comment.Actions>
             </StyledContent>
         </Comment>
@@ -63,4 +69,4 @@ export class Messages extends Component {
     }
 }
 
-export default connect( mapStateToProps )( Messages );
+export default connect( mapStateToProps, mapDispatchToProps )( Messages );

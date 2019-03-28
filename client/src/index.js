@@ -25,7 +25,7 @@ const initialState = {
     // users,
     socket: { connected: false },
     // channels,
-    currentChannelId: 'C5',
+    // currentChannelId: 'C5',
     // currentUserId: 'U02'
 };
 

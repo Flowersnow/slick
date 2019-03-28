@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { user } from '../../actions/index';
 
-class HomePage extends React.Component {
+class AdminPage extends React.Component {
     componentDidMount() {
         this.props.dispatch(user.getAll());
     }
@@ -18,7 +18,7 @@ class HomePage extends React.Component {
         return (
             <div className="col-md-6 col-md-offset-3">
                 <h1>Hi {user.firstName}!</h1>
-                <p>You're logged in with React!!</p>
+                <p>You're logged in Admin View with Slick React!!</p>
                 <h3>All registered users:</h3>
                 {users.loading && <em>Loading users...</em>}
                 {users.error && <span className="text-danger">ERROR: {users.error}</span>}
@@ -53,5 +53,5 @@ function mapStateToProps(state) {
     };
 }
 
-const connectedHomePage = connect(mapStateToProps)(HomePage);
-export { connectedHomePage as HomePage };
+const connectedAdminPage = connect(mapStateToProps)(AdminPage);
+export { connectedAdminPage as AdminPage };

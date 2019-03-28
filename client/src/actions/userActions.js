@@ -13,7 +13,8 @@ import {
     DELETE_SUCCESS,
     DELETE_FAILURE,
     INITIALIZE,
-    CHANGE_VIEWING_USER
+    CHANGE_VIEWING_USER,
+    GET_VIEWING_USER_STATS,
 } from './actionTypes';
 import { userService } from '../_services';
 import { alert } from './alert';
@@ -29,6 +30,7 @@ export const user = {
     initialize,
     success,
     changeViewingUser,
+    getUserStatistics,
 };
 
 function login(username, password, adminstatus) {
@@ -71,6 +73,7 @@ function initialize() {
 }
 
 function logout() {
+    history.push('/login');
     userService.logout();
     return { type: LOGOUT };
 }
@@ -122,11 +125,11 @@ function getAll() {
     }
 
     function success(users) {
-        return { type: GETALL_SUCCESS, users }
+        return { type: GETALL_SUCCESS, payload: users }
     }
 
     function failure(error) {
-        return { type: GETALL_FAILURE, error }
+        return { type: GETALL_FAILURE, payload: error }
     }
 }
 
@@ -143,18 +146,24 @@ function _delete(id) {
     };
 
     function request(id) {
-        return { type: DELETE_REQUEST, id }
+        return { type: DELETE_REQUEST, payload: { id } }
     }
 
     function success(id) {
-        return { type: DELETE_SUCCESS, id }
+        return { type: DELETE_SUCCESS, payload: { id } }
     }
 
     function failure(id, error) {
-        return { type: DELETE_FAILURE, id, error }
+        return { type: DELETE_FAILURE, payload: { id: error } }
     }
 }
 
-function changeViewingUser(userId) {
-    return { type: CHANGE_VIEWING_USER, payload: userId }
-};
+function changeViewingUser(id) {
+    history.push('/user');
+    return { type: CHANGE_VIEWING_USER, payload: id }
+}
+
+function getUserStatistics(id) {
+    history.push('/byuserstats');
+    return { type:  GET_VIEWING_USER_STATS, payload: id }
+}

@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Input as UiInput } from 'semantic-ui-react';
 import { connect } from 'react-redux';
-import { socketAction, messageSent } from "../../actions/index";
-import { currentChannelSelector, currentUserSelector } from "../../selectors/index";
+import { socketAction, messageSent } from "../../actions";
+import { currentChannelSelector, currentUserSelector } from "../../selectors";
 
 const InputDiv = styled.div`
   grid-column: 2;
@@ -16,6 +16,7 @@ const mapStateToProps = state => ( {
     currentChannel: currentChannelSelector( state.channels, state.currentChannelId ),
     currentUser: currentUserSelector( state.users, state.currentUserId )
 } );
+
 const mapDispatchToProps = { messageSent: socketAction( messageSent ) };
 
 class Input extends Component {
@@ -32,7 +33,7 @@ class Input extends Component {
             return;
         }
         this.props.messageSent( this.state.message, this.props.currentUser.id, this.props.currentChannel.id );
-        this.setState( { message: "" } );
+        this.setState( { message: '' } );
     };
 
     get disabled() {
@@ -44,9 +45,7 @@ class Input extends Component {
             onMessageChanged,
             onMessageKeypress,
             disabled,
-            state: {
-                message
-            }
+            state: { message }
         } = this;
 
         const {

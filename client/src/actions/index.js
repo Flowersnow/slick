@@ -4,3 +4,4 @@ export * from './messages.js';
 export * from './channel.js';
 export * from './alert';
 export * from './userActions';
+export * from './thread';
