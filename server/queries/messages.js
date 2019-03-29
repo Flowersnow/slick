@@ -71,7 +71,8 @@ async function getInitialInfo(db) {
             '\tTHEN true\n' +
             '\tELSE false\n' +
             '\tEND AS "isAdmin"\n' +
-            '\tFROM users u LEFT JOIN ADMIN a ON u.userid = a.userid'
+            '\tFROM users u LEFT JOIN ADMIN a ON u.userid = a.userid\n' +
+            '\tORDER BY fullname'
     };
     const channelsQuery = {
         text: 'SELECT * FROM channel'
