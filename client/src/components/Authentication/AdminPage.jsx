@@ -2,15 +2,19 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { user } from '../../actions/index';
+import { user as userAction } from '../../actions';
 
 class AdminPage extends React.Component {
     componentDidMount() {
-        this.props.dispatch(user.getAll());
+        this.props.dispatch(userAction.getAll());
     }
 
     handleDeleteUser(id) {
-        return (e) => this.props.dispatch(user.delete(id));
+        return (e) => this.props.dispatch(userAction.delete(id));
+    }
+
+    logout() {
+        this.props.dispatch(userAction.logout());
     }
 
     render() {
@@ -37,7 +41,7 @@ class AdminPage extends React.Component {
                     </ul>
                 }
                 <p>
-                    <Link to="/login">Logout</Link>
+                    <Link to="/login" onClick={this.logout}>Logout</Link>
                 </p>
             </div>
         );
