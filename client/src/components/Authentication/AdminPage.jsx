@@ -6,15 +6,15 @@ import { user as userAction } from '../../actions';
 
 class AdminPage extends React.Component {
     componentDidMount() {
-        this.props.dispatch(userAction.getAll());
+        this.props.dispatch( userAction.getAll() );
     }
 
     handleDeleteUser(id) {
-        return (e) => this.props.dispatch(userAction.delete(id));
+        return (e) => this.props.dispatch( userAction.delete( id ) );
     }
 
     logout() {
-        this.props.dispatch(userAction.logout());
+        this.props.dispatch( userAction.logout() );
     }
 
     render() {
@@ -27,18 +27,23 @@ class AdminPage extends React.Component {
                 {users.loading && <em>Loading users...</em>}
                 {users.error && <span className="text-danger">ERROR: {users.error}</span>}
                 {users.items &&
-                    <ul>
-                        {users.items.map((user, index) =>
-                            <li key={user.id}>
-                                {user.firstName + ' ' + user.lastName}
-                                {
-                                    user.deleting ? <em> - Deleting...</em>
-                                    : user.deleteError ? <span className="text-danger"> - ERROR: {user.deleteError}</span>
-                                    : <span> - <a onClick={this.handleDeleteUser(user.id)}>Delete</a></span>
-                                }
-                            </li>
-                        )}
-                    </ul>
+                <ul>
+                    {users.items.map( (displayingUser) => {
+                            if (displayingUser.username !== user.username) {
+                                return <li key={displayingUser.id}>
+                                    {displayingUser.firstName + ' ' + displayingUser.lastName}
+                                    {
+                                        displayingUser.deleting ? <em> - Deleting...</em>
+                                            : displayingUser.deleteError ?
+                                            <span className="text-danger"> - ERROR: {displayingUser.deleteError}</span>
+                                            : <span> - <a
+                                                onClick={this.handleDeleteUser( displayingUser.id )}>Delete</a></span>
+                                    }
+                                </li>
+                            }
+                        }
+                    )}
+                </ul>
                 }
                 <p>
                     <Link to="/login" onClick={this.logout}>Logout</Link>
@@ -57,5 +62,5 @@ function mapStateToProps(state) {
     };
 }
 
-const connectedAdminPage = connect(mapStateToProps)(AdminPage);
+const connectedAdminPage = connect( mapStateToProps )( AdminPage );
 export { connectedAdminPage as AdminPage };
