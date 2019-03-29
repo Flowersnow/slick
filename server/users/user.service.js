@@ -75,7 +75,7 @@ async function isAdmin(id) {
 async function getAll() {
     console.log("Getting all users from db");
     const query = {
-        text: "select userid, fullname, username from users",
+        text: "select userid, fullname, username from users order by fullname",
     };
     try {
     const response = await performQuery(query);
