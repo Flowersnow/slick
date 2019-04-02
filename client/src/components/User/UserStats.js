@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { viewingUserStatsSelector } from '../../selectors';
+import { Form, Dropdown } from 'semantic-ui-react';
+import {socketAction, user} from "../../actions";
 
 const UserStatsDiv = styled.div`
   display: flex;
@@ -43,7 +45,31 @@ const mapStateToProps = ({users, viewingUserId, viewingUserStats}) => {
         })
 };
 
+const mapDispatchToProps = {
+    getUserStatistics: socketAction( user.getUserStatistics ),
+};
+
 class UserStats extends React.Component {
+    state = {
+        channelName: '',
+        nameMode: 'fullname'
+    };
+
+    handleSubmit = () => {
+        this.props.getUserStatistics(this.props.viewingUser.id, this.state.nameMode, this.state.channelName, false);
+    };
+
+    onChannelNameChanged = ({ target: { value: channelName } } ) => {
+        this.setState( { channelName } );
+    };
+
+    onNameModeChanged = (e,{value})=>this.setState({nameMode:value})
+
+    dropdownOptions = [
+        {key: 'fullname', text: 'Display full name', value: 'fullname'},
+        {key: 'firstname', text: 'First name only', value: 'firstname'},
+        {key: 'lastname', text: 'Last name only', value: 'lastname'},
+    ];
 
     render() {
 
@@ -59,6 +85,13 @@ class UserStats extends React.Component {
                 },
                 viewingUser
             },
+            state: {
+                nameMode
+            },
+            onChannelNameChanged,
+            onNameModeChanged,
+            handleSubmit,
+            dropdownOptions
         } = this;
 
         return (
@@ -109,6 +142,22 @@ class UserStats extends React.Component {
                     }}>
                 </FormattedFieldDisplay>
                     </MetadataFieldDescriptor>
+                    <Dropdown
+                        placeholder='Please select an option'
+                        selection
+                        options={dropdownOptions}
+                        value={nameMode}
+                        onChange={onNameModeChanged}
+                    />
+                    <br></br>
+                    <Form onSubmit={handleSubmit}>
+                        <label>Search only within channels containing this keyword &nbsp;</label>
+                        <input
+                            id="channelname"
+                            type="text"
+                            onChange={onChannelNameChanged} />
+                        <button>Find the people!</button>
+                    </Form>
                     <MetadataField>
                     {this.props.userStatistics.usersMessagedAllChannels}
                     </MetadataField>
@@ -127,5 +176,5 @@ const FormattedFieldDisplay = ({value, message_prefix, message_suffix}) => (
 
 
 
-const userStatsConnected = connect( mapStateToProps )( UserStats );
+const userStatsConnected = connect( mapStateToProps, mapDispatchToProps )( UserStats );
 export { userStatsConnected as UserStats };

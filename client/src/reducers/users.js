@@ -10,7 +10,6 @@ import {
     DELETE_FAILURE,
     INITIALIZE_USERS,
     CHANGE_VIEWING_USER,
-    GET_VIEWING_USER_STATS,
     SENT_VIEWING_USER_STATS,
 } from '../actions/actionTypes.js';
 import filter from 'lodash/filter';

@@ -163,7 +163,9 @@ function changeViewingUser(id) {
     return { type: CHANGE_VIEWING_USER, payload: id }
 }
 
-function getUserStatistics(id) {
-    history.push('/byuserstats');
-    return { type:  GET_VIEWING_USER_STATS, payload: id }
+function getUserStatistics(id, nameMode = 'fullname', channelName = '', newPage = true) {
+    if (newPage) {
+        history.push('/byuserstats');
+    }
+    return { type:  GET_VIEWING_USER_STATS, payload: { id, nameMode, channelName }}
 }

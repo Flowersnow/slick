@@ -167,7 +167,7 @@ async function getThreadMessages(db, { messageId, channelId }) {
     }
 }
 
-async function getUserStatistics(db, viewingUserId) {
+async function getUserStatistics(db, viewingUserId, nameMode, channelName) {
 
     const numSentMessagesQuery = {
         text: "SELECT COUNT(*) FROM messages WHERE userid = '" + viewingUserId + "';"
@@ -196,14 +196,15 @@ async function getUserStatistics(db, viewingUserId) {
     };
 
     const usersMessagedAllChannelsQuery = {
-      text: 'SELECT u.fullname ' +
-          'FROM users u ' +
+      text: 'SELECT f.' + nameMode + ' ' +
+          'FROM fullname f, users u ' +
           'WHERE NOT EXISTS ' +
-          '((SELECT c.channelid FROM channel c) ' +
+          '((SELECT c.channelid FROM channel c WHERE c.channelname LIKE \'%'+ channelName + '%\') ' +
           'EXCEPT ' +
           '(SELECT m.channelid ' +
           'FROM messages m ' +
-          'WHERE m.userid = u.userid));',
+          'WHERE m.userid = u.userid)) '  +
+          'AND f.fullname = u.fullname;',
     };
 
     try {
@@ -220,7 +221,7 @@ async function getUserStatistics(db, viewingUserId) {
             numAdminChannels: numAdminChannelsResponse.rows[0]["count"],
             sentMessages: numSentMessagesResponse.rows[0]["count"],
             avgLengthMessagesSent: avgLengthOfMessagesSentResponse.rows[0]["avg"] === null ? 0 : parseFloat(avgLengthOfMessagesSentResponse.rows[0]["avg"]).toFixed(2),
-            usersMessagedAllChannels: usersMessagedAllChannelsResponse.rows.length === 0 ? 'None found' : (Object.values(usersMessagedAllChannelsResponse.rows.map(person => person["fullname"]))).join(", "),
+            usersMessagedAllChannels: usersMessagedAllChannelsResponse.rows.length === 0 ? 'None found' : (Object.values(usersMessagedAllChannelsResponse.rows.map(person => person[nameMode]))).join(", "),
         }
 
     } catch (err) {

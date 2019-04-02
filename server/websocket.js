@@ -125,8 +125,8 @@ const onThreadChanged = (socket, db) => ({ messageId, channelId }) => {
         .then( threads => socket.emit( SOCKET_MESSAGE, { type: THREAD_MESSAGES_RECEIVED, payload: threads } ) )
 };
 
-const userStats = (socket, db) => (userId) => {
-    getUserStatistics( db, userId )
+const userStats = (socket, db) => ({ id, nameMode, channelName }) => {
+    getUserStatistics( db, id, nameMode, channelName )
         .then( userStats => socket.emit( SOCKET_MESSAGE, { type: SENT_VIEWING_USER_STATS, payload: userStats}))
 };
 
